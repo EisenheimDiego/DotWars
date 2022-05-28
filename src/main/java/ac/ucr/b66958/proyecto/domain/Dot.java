@@ -1,0 +1,81 @@
+package ac.ucr.b66958.proyecto.domain;
+
+public class Dot {
+
+    private Integer life;
+    private Integer strength;
+    private Integer hitDistance;
+    private Integer stepDistance;
+    private Integer x;
+    private Integer y;
+    private Integer id;
+
+    public Dot() {
+    }
+
+    public Dot(Integer x, Integer y, Integer id) {
+        this.x = x;
+        this.y = y;
+        this.id = id;
+        this.life = 3;
+        this.strength = 1;
+        this.hitDistance = 3;
+        this.stepDistance = 3;
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public Integer getLife() {
+        return life;
+    }
+
+    public void setLife(Integer life) {
+        this.life = life;
+    }
+
+    public Integer getStrength() {
+        return strength;
+    }
+
+    public void setStrength(Integer strength) {
+        this.strength = strength;
+    }
+
+    public Integer getHitDistance() {
+        return hitDistance;
+    }
+
+    public void setHitDistance(Integer hitDistance) {
+        this.hitDistance = hitDistance;
+    }
+
+    public Integer getStepDistance() {
+        return stepDistance;
+    }
+
+    public void setStepDistance(Integer stepDistance) {
+        this.stepDistance = stepDistance;
+    }
+
+    public Integer getX() {
+        return x;
+    }
+
+    public void setX(Integer x) {
+        this.x = x;
+    }
+
+    public Integer getY() {
+        return y;
+    }
+
+    public void setY(Integer y) {
+        this.y = y;
+    }
+}
