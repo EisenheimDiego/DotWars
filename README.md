@@ -1,12 +1,12 @@
 # DotWars
 
-###Once the app is running:
+### Once the app is running:
 
 - Both players must type their names.
 - A board size must be selected from the default options, or typed in the personalized option.
 - Once all this data has been provided, you can go ahead and click the **Begin new game**
 
-###Once the game has begun:
+### Once the game has begun:
 
 - The game will indicate which player's turn is up.
 - The player whose turn is to play will have various options during it's turn, such like:
