@@ -1,7 +1,10 @@
 package ac.ucr.b66958.proyecto.utility;
 
 import ac.ucr.b66958.proyecto.domain.Square;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.scene.control.Alert;
+import javafx.scene.control.ComboBox;
 
 public class Utility {
 
@@ -47,6 +50,12 @@ public class Utility {
             y+=squareSize;
         }
         return squares;
+    }
+
+    public static ComboBox<String> initCombo(){
+        ObservableList<String> items = FXCollections.observableArrayList();
+        items.addAll("Personalized","5x5", "10x10", "15x15", "20x20", "25x25");
+        return new ComboBox<>(items);
     }
 
 }

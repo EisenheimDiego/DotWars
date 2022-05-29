@@ -4,9 +4,12 @@ import ac.ucr.b66958.proyecto.domain.Dot;
 import ac.ucr.b66958.proyecto.domain.Player;
 import ac.ucr.b66958.proyecto.domain.Square;
 import ac.ucr.b66958.proyecto.utility.Utility;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
@@ -32,6 +35,8 @@ public class InitWindow extends Pane {
 
     private Label showTurn;
 
+    ComboBox<String> defaultDimensions;
+
     GraphicsContext g;
     Square[][] squares;
     Player p1, p2;
@@ -49,7 +54,7 @@ public class InitWindow extends Pane {
 
         this.getChildren().addAll(this.canvas, this.size, this.sizeText, this.begin,
                 this.player1, this.player2, this.player1Name, this.player2Name, this.showTurn,
-                this.quit, this.save, this.load, this.move);
+                this.quit, this.save, this.load, this.move, this.defaultDimensions);
 
         events();
         drawBorderedBoard();
@@ -82,6 +87,9 @@ public class InitWindow extends Pane {
         this.load = new Button("Load");
 
         this.move = new Button("Move");
+
+        this.defaultDimensions = Utility.initCombo();
+        this.defaultDimensions.getSelectionModel().select(0);
     }
 
     private void setCoordinates(){
@@ -89,11 +97,14 @@ public class InitWindow extends Pane {
         this.size.setLayoutX(720);
         this.size.setLayoutY(50);
 
-        this.sizeText.setLayoutX(790);
+        this.defaultDimensions.setLayoutX(790);
+        this.defaultDimensions.setLayoutY(50);
+
+        this.sizeText.setLayoutX(920);
         this.sizeText.setLayoutY(50);
         this.sizeText.setPrefWidth(100);
 
-        this.begin.setLayoutX(900);
+        this.begin.setLayoutX(1040);
         this.begin.setLayoutY(50);
 
         this.player1.setLayoutX(720);
@@ -130,7 +141,7 @@ public class InitWindow extends Pane {
         this.save.setOnAction(actionEvent -> saveGame());
         this.load.setOnAction(actionEvent -> loadGame());
         this.move.setOnAction(actionEvent -> moveDot());
-
+        this.defaultDimensions.setOnAction(actionEvent -> comboChanged());
         this.setOnMouseClicked(this::squareClicked);
     }
 
@@ -152,13 +163,20 @@ public class InitWindow extends Pane {
             newDot.setId(dotPosition+1);
             p1.getDots().remove(dotPosition);
             p1.addDot(newDot);
+            dotPosition++;
         }else{
             p2.getDots().get(dotPosition).setX(p2.getDots().get(dotPosition).getX()-(int)Utility.squareSize);
             newDot = p2.getDots().get(dotPosition);
             newDot.setId(dotPosition-1);
             p2.getDots().remove(dotPosition);
             p2.addDot(newDot);
+            dotPosition--;
         }
+        assignTurn();
+        repaint();
+    }
+
+    private void repaint(){
         g.setFill(Color.LIGHTGRAY);
         g.clearRect(0, 10, 700, 700);
         drawBoard();
@@ -196,22 +214,31 @@ public class InitWindow extends Pane {
         if(event.getX() > 700 || event.getY() > 700 || squares == null){
             return;
         }
+        repaint();
+        g.setStroke(Color.WHITE);
         for (int i = 0; i < squares[0].length; i++) {
             for (int j = 0; j < squares[0].length; j++) {
                 if(Utility.compareCoordinates(squares[i][j].getX(), event.getX(),
                         squares[i][j].getY(), event.getY(), 1)){
-                    if(p1.getDots().containsKey(j) ){
-                        if(Utility.compareCoordinates(p1.getDots().get(j).getX(), squares[i][j].getX(),
-                                p1.getDots().get(j).getY(), squares[i][j].getY(), 2)){
-                            System.out.println(p1.getDots().get(j).getId()+" of player 1");
-                            this.dotPlayer = 1;
+                    if(turn == p1){
+                        if(p1.getDots().containsKey(j) ){
+                            if(Utility.compareCoordinates(p1.getDots().get(j).getX(), squares[i][j].getX(),
+                                    p1.getDots().get(j).getY(), squares[i][j].getY(), 2)){
+                                System.out.println(p1.getDots().get(j).getId()+" of player 1");
+                                this.dotPlayer = 1;
+                                g.strokeRect(p1.getDots().get(j).getX(), p1.getDots().get(j).getY(),
+                                        Utility.squareSize, Utility.squareSize);
+                            }
                         }
-                    }
-                    if(p2.getDots().containsKey(j)){
-                        if(Utility.compareCoordinates(p2.getDots().get(j).getX(), squares[i][j].getX(),
-                                p2.getDots().get(j).getY(), squares[i][j].getY(), 2)){
-                            System.out.println(p2.getDots().get(j).getId()+" of player 2");
-                            this.dotPlayer = 2;
+                    }else {
+                        if (p2.getDots().containsKey(j)) {
+                            if (Utility.compareCoordinates(p2.getDots().get(j).getX(), squares[i][j].getX(),
+                                    p2.getDots().get(j).getY(), squares[i][j].getY(), 2)) {
+                                System.out.println(p2.getDots().get(j).getId() + " of player 2");
+                                this.dotPlayer = 2;
+                                g.strokeRect(p2.getDots().get(j).getX(), p2.getDots().get(j).getY(),
+                                        Utility.squareSize, Utility.squareSize);
+                            }
                         }
                     }
                     this.dotPosition = j;
@@ -224,7 +251,7 @@ public class InitWindow extends Pane {
         g.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
         drawBorderedBoard();
 
-        g.setFill(Color.BLACK);
+        g.setStroke(Color.BLACK);
         for (int i = 0; i < squares[0].length; i++) {
             for (int j = 0; j < squares[0].length; j++) {
                 g.strokeRect(squares[i][j].getX(), squares[i][j].getY(), Utility.squareSize, Utility.squareSize);
@@ -238,6 +265,7 @@ public class InitWindow extends Pane {
         g.fillRect(0, 10, 700, 700); //BACKGROUND
         g.setFill(Color.BLACK);
         g.setLineWidth(2);
+        g.setStroke(Color.BLACK);
         g.strokeRect(0, 10, 700, 700);
     }
 
@@ -270,6 +298,27 @@ public class InitWindow extends Pane {
         dots = p2.getDots();
         g.setFill(Color.BLUE);
         dots.forEach((k,v) -> drawRect(v.getX(),v.getY()));
+    }
+
+    private void comboChanged(){
+        if(defaultDimensions.getSelectionModel().getSelectedIndex() != 0){
+            this.sizeText.setEditable(false);
+        }else
+            this.sizeText.setEditable(true);
+        switch (defaultDimensions.getSelectionModel().getSelectedIndex()){
+            case 0: this.sizeText.clear();
+                break;
+            case 1: this.sizeText.setText("5");
+                break;
+            case 2: this.sizeText.setText("10");
+                break;
+            case 3: this.sizeText.setText("15");
+                break;
+            case 4: this.sizeText.setText("20");
+                break;
+            case 5: this.sizeText.setText("25");
+                break;
+        }
     }
 
     private void loadGame(){
