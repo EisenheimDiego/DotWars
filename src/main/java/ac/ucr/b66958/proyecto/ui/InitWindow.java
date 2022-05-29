@@ -6,13 +6,16 @@ import ac.ucr.b66958.proyecto.domain.Square;
 import ac.ucr.b66958.proyecto.utility.Utility;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.geometry.Insets;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import java.util.Map;
@@ -28,7 +31,9 @@ public class InitWindow extends Pane {
     private Label player1, player2;
     private TextField player1Name, player2Name;
 
-    private Button quit;
+    private HBox menu;
+
+    private Button quit, restart;
     private Button save, load;
 
     private Button move;
@@ -54,7 +59,9 @@ public class InitWindow extends Pane {
 
         this.getChildren().addAll(this.canvas, this.size, this.sizeText, this.begin,
                 this.player1, this.player2, this.player1Name, this.player2Name, this.showTurn,
-                this.quit, this.save, this.load, this.move, this.defaultDimensions);
+                this.defaultDimensions, this.menu);
+
+        this.menu.getChildren().addAll(this.quit, this.save, this.load, this.restart, this.move);
 
         events();
         drawBorderedBoard();
@@ -80,8 +87,18 @@ public class InitWindow extends Pane {
         this.size = new Label("Board size:");
         this.sizeText = new TextField();
 
+        this.menu = new HBox();
+        this.menu.setPrefHeight(50);
+        this.menu.setPrefWidth(500);
+        this.menu.setStyle("-fx-background-color: #0c0d2b");
+        this.menu.setPadding(new Insets(10));
+        this.menu.setSpacing(10);
+
         this.quit = new Button("Quit");
         this.quit.setStyle("-fx-background-color: #ff0000; -fx-text-fill: #ffffff");
+
+        this.restart = new Button("Restart");
+        this.restart.setStyle("-fx-background-color: #02d63e;");
 
         this.save = new Button("Save");
         this.load = new Button("Load");
@@ -122,17 +139,20 @@ public class InitWindow extends Pane {
         this.showTurn.setLayoutX(720);
         this.showTurn.setLayoutY(90);
 
-        this.quit.setLayoutX(720);
-        this.quit.setLayoutY(120);
+        this.menu.setLayoutX(720);
+        this.menu.setLayoutY(120);
 
-        this.save.setLayoutX(770);
-        this.save.setLayoutY(120);
+        //this.quit.setLayoutX(720);
+        //this.quit.setLayoutY(120);
 
-        this.load.setLayoutX(820);
-        this.load.setLayoutY(120);
+        //this.save.setLayoutX(770);
+        //this.save.setLayoutY(120);
 
-        this.move.setLayoutX(820);
-        this.move.setLayoutY(150);
+        //this.load.setLayoutX(820);
+        //this.load.setLayoutY(120);
+
+        //this.move.setLayoutX(820);
+        //this.move.setLayoutY(150);
     }
 
     private void events(){
@@ -143,6 +163,7 @@ public class InitWindow extends Pane {
         this.move.setOnAction(actionEvent -> moveDot());
         this.defaultDimensions.setOnAction(actionEvent -> comboChanged());
         this.setOnMouseClicked(this::squareClicked);
+        this.setOnKeyTyped(this::moveKey);
     }
 
     private void assignTurn(){
@@ -153,6 +174,14 @@ public class InitWindow extends Pane {
         if(!showTurn.isVisible())
             this.showTurn.setVisible(true);
         this.showTurn.setText("Player's turn: "+turn.getName());
+    }
+
+    private void attack(){
+        //TODO ATTACKING METHOD FOR A DOT
+    }
+
+    private void moveKey(KeyEvent event){
+        System.out.println(event.getCharacter());
     }
 
     private void moveDot(){
