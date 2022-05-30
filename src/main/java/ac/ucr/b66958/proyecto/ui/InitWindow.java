@@ -13,6 +13,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
@@ -163,7 +164,7 @@ public class InitWindow extends Pane {
         this.move.setOnAction(actionEvent -> moveDot());
         this.defaultDimensions.setOnAction(actionEvent -> comboChanged());
         this.setOnMouseClicked(this::squareClicked);
-        this.setOnKeyTyped(this::moveKey);
+        this.setOnKeyReleased(this::moveKey);
     }
 
     private void assignTurn(){
@@ -181,7 +182,20 @@ public class InitWindow extends Pane {
     }
 
     private void moveKey(KeyEvent event){
-        System.out.println(event.getCharacter());
+        switch (event.getCode()){
+            case UP:
+                System.out.println("UP");
+                break;
+            case DOWN:
+                System.out.println("DOWN");
+                break;
+            case LEFT:
+                System.out.println("LEFT");
+                break;
+            case RIGHT:
+                System.out.println("RIGHT");
+                break;
+        }
     }
 
     private void moveDot(){
@@ -330,10 +344,7 @@ public class InitWindow extends Pane {
     }
 
     private void comboChanged(){
-        if(defaultDimensions.getSelectionModel().getSelectedIndex() != 0){
-            this.sizeText.setEditable(false);
-        }else
-            this.sizeText.setEditable(true);
+        this.sizeText.setEditable(defaultDimensions.getSelectionModel().getSelectedIndex() == 0);
         switch (defaultDimensions.getSelectionModel().getSelectedIndex()){
             case 0: this.sizeText.clear();
                 break;
