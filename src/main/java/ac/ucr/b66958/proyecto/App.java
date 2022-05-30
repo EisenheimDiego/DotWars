@@ -5,12 +5,10 @@ import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
-import java.io.IOException;
-
 public class App extends Application {
 
     @Override
-    public void start(Stage stage) throws IOException {
+    public void start(Stage stage) {
         InitWindow window = new InitWindow();
         Scene scene = new Scene(window, 1280, 720);
         stage.setTitle("My Game");
