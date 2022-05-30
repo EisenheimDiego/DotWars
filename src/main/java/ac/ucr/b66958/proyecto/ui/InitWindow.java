@@ -19,6 +19,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
+
 import java.util.Map;
 
 public class InitWindow extends Pane {
@@ -53,7 +54,7 @@ public class InitWindow extends Pane {
 
         this.canvas = new Canvas(700, 700);
         this.dotPosition = 0;
-        this.dotPlayer = 0;
+        this.dotPlayer = -1;
 
         initComponents();
         setCoordinates();
@@ -68,7 +69,7 @@ public class InitWindow extends Pane {
         drawBorderedBoard();
     }
 
-    private void initComponents(){
+    private void initComponents() {
 
         this.g = this.canvas.getGraphicsContext2D();
 
@@ -110,7 +111,7 @@ public class InitWindow extends Pane {
         this.defaultDimensions.getSelectionModel().select(0);
     }
 
-    private void setCoordinates(){
+    private void setCoordinates() {
 
         this.size.setLayoutX(720);
         this.size.setLayoutY(50);
@@ -156,87 +157,107 @@ public class InitWindow extends Pane {
         //this.move.setLayoutY(150);
     }
 
-    private void events(){
+    private void events() {
         this.begin.setOnAction(actionEvent -> beginBoard());
         this.quit.setOnAction(actionEvent -> quitGame());
         this.save.setOnAction(actionEvent -> saveGame());
         this.load.setOnAction(actionEvent -> loadGame());
-        this.move.setOnAction(actionEvent -> moveDot());
+        //this.move.setOnAction(actionEvent -> moveDot());
         this.defaultDimensions.setOnAction(actionEvent -> comboChanged());
         this.setOnMouseClicked(this::squareClicked);
         this.setOnKeyReleased(this::moveKey);
     }
 
-    private void assignTurn(){
-        if(turn.getName().equals(p1.getName()))
+    private void assignTurn() {
+        if (turn.getName().equals(p1.getName()))
             turn = p2;
         else
             turn = p1;
-        if(!showTurn.isVisible())
+        if (!showTurn.isVisible())
             this.showTurn.setVisible(true);
-        this.showTurn.setText("Player's turn: "+turn.getName());
+        this.showTurn.setText("Player's turn: " + turn.getName());
     }
 
-    private void attack(){
+    private void attack() {
         //TODO ATTACKING METHOD FOR A DOT
     }
 
-    private void moveKey(KeyEvent event){
-        switch (event.getCode()){
-            case UP:
-                System.out.println("UP");
+    private void moveKey(KeyEvent event) {
+        if(dotPosition != -1){
+            switch (event.getCode()) {
+                case UP:
+                    moveDot(4);
+                    break;
+                case DOWN:
+                    moveDot(3);
+                    break;
+                case LEFT:
+                    moveDot(2);
+                    break;
+                case RIGHT:
+                    moveDot(1);
+                    break;
+            }
+        }
+    }
+
+    private void movement(int direction, Dot dot, Player p) {
+        Dot newDot;
+        switch (direction) {
+            case 1:
+                dot.setX(dot.getX() + (int) Utility.squareSize);
+                dot.setId(dotPosition + 1);
+                newDot = p.getDots().get(dotPosition);
+                newDot.setId(dotPosition + 1);
+                p.getDots().remove(dotPosition);
+                p.addDot(newDot);
                 break;
-            case DOWN:
-                System.out.println("DOWN");
+            case 2:
+                dot.setX(dot.getX() - (int) Utility.squareSize);
+                dot.setId(dotPosition - 1);
+                newDot = p.getDots().get(dotPosition);
+                newDot.setId(dotPosition - 1);
+                p.getDots().remove(dotPosition);
+                p.addDot(newDot);
                 break;
-            case LEFT:
-                System.out.println("LEFT");
+            case 3:
+                dot.setY(dot.getY() + (int) Utility.squareSize);
                 break;
-            case RIGHT:
-                System.out.println("RIGHT");
+            case 4:
+                dot.setY(dot.getY() - (int) Utility.squareSize);
                 break;
         }
     }
 
-    private void moveDot(){
-        Dot newDot;
-        if(this.dotPlayer == 1){
-            p1.getDots().get(dotPosition).setX(p1.getDots().get(dotPosition).getX()+(int)Utility.squareSize);
-            newDot = p1.getDots().get(dotPosition);
-            newDot.setId(dotPosition+1);
-            p1.getDots().remove(dotPosition);
-            p1.addDot(newDot);
-            dotPosition++;
-        }else{
-            p2.getDots().get(dotPosition).setX(p2.getDots().get(dotPosition).getX()-(int)Utility.squareSize);
-            newDot = p2.getDots().get(dotPosition);
-            newDot.setId(dotPosition-1);
-            p2.getDots().remove(dotPosition);
-            p2.addDot(newDot);
-            dotPosition--;
+    private void moveDot(int direction) {
+        if (this.dotPlayer == 1) {
+            movement(direction, p1.getDots().get(dotPosition), p1);
+        } else {
+            movement(direction, p2.getDots().get(dotPosition), p2);
         }
+        dotPosition = -1;
         assignTurn();
         repaint();
     }
 
-    private void repaint(){
+    private void repaint() {
         g.setFill(Color.LIGHTGRAY);
         g.clearRect(0, 10, 700, 700);
         drawBoard();
         drawDots();
     }
 
-    private void beginBoard(){
+    private void beginBoard() {
         String message = "";
-        try{
+        try {
             int n = Integer.parseInt(sizeText.getText());
-            if(n < 5 || (n % 5 != 0)){
+            if (n < 5 || (n % 5 != 0)) {
                 message = "Value must be a multiple of 5. Min value: 5";
-            }else{
-                if(player1Name.getText().isEmpty() || player1Name.getText().equals("")
-                || player2Name.getText().isEmpty() || player2Name.getText().equals("")){
-                    message ="You must type both of the players names";
-                }else{
+            } else {
+                if (player1Name.getText().isEmpty() || player1Name.getText().equals("")
+                        || player2Name.getText().isEmpty() || player2Name.getText().equals("")) {
+                    message = "You must type both of the players names";
+                } else {
                     p1 = new Player(player1Name.getText());
                     p2 = new Player(player2Name.getText());
                     turn = p2;
@@ -246,34 +267,34 @@ public class InitWindow extends Pane {
                     assignTurn();
                 }
             }
-        }catch (NumberFormatException nfe){
-            message ="Board size value must be numeric";
-        }finally {
+        } catch (NumberFormatException nfe) {
+            message = "Board size value must be numeric";
+        } finally {
             Utility.showMessage(message, 1);
         }
     }
 
-    private void squareClicked(MouseEvent event){
-        if(event.getX() > 700 || event.getY() > 700 || squares == null){
+    private void squareClicked(MouseEvent event) {
+        if (event.getX() > 700 || event.getY() > 700 || squares == null) {
             return;
         }
         repaint();
         g.setStroke(Color.WHITE);
         for (int i = 0; i < squares[0].length; i++) {
             for (int j = 0; j < squares[0].length; j++) {
-                if(Utility.compareCoordinates(squares[i][j].getX(), event.getX(),
-                        squares[i][j].getY(), event.getY(), 1)){
-                    if(turn == p1){
-                        if(p1.getDots().containsKey(j) ){
-                            if(Utility.compareCoordinates(p1.getDots().get(j).getX(), squares[i][j].getX(),
-                                    p1.getDots().get(j).getY(), squares[i][j].getY(), 2)){
-                                System.out.println(p1.getDots().get(j).getId()+" of player 1");
+                if (Utility.compareCoordinates(squares[i][j].getX(), event.getX(),
+                        squares[i][j].getY(), event.getY(), 1)) {
+                    if (turn == p1) {
+                        if (p1.getDots().containsKey(j)) {
+                            if (Utility.compareCoordinates(p1.getDots().get(j).getX(), squares[i][j].getX(),
+                                    p1.getDots().get(j).getY(), squares[i][j].getY(), 2)) {
+                                System.out.println(p1.getDots().get(j).getId() + " of player 1");
                                 this.dotPlayer = 1;
                                 g.strokeRect(p1.getDots().get(j).getX(), p1.getDots().get(j).getY(),
                                         Utility.squareSize, Utility.squareSize);
                             }
                         }
-                    }else {
+                    } else {
                         if (p2.getDots().containsKey(j)) {
                             if (Utility.compareCoordinates(p2.getDots().get(j).getX(), squares[i][j].getX(),
                                     p2.getDots().get(j).getY(), squares[i][j].getY(), 2)) {
@@ -290,7 +311,7 @@ public class InitWindow extends Pane {
         }
     }
 
-    private void drawBoard(){
+    private void drawBoard() {
         g.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
         drawBorderedBoard();
 
@@ -303,7 +324,7 @@ public class InitWindow extends Pane {
         }
     }
 
-    private void drawBorderedBoard(){
+    private void drawBorderedBoard() {
         g.setFill(Color.LIGHTGRAY);
         g.fillRect(0, 10, 700, 700); //BACKGROUND
         g.setFill(Color.BLACK);
@@ -312,14 +333,14 @@ public class InitWindow extends Pane {
         g.strokeRect(0, 10, 700, 700);
     }
 
-    private void assignDots(){
+    private void assignDots() {
         for (int i = 0; i < squares[0].length; i++) {
-            if(i != 0){
-                if( i % 5 == 0){
+            if (i != 0) {
+                if (i % 5 == 0) {
 
                     Dot dotP1 = new Dot(squares[0][i].getX(), squares[0][i].getY(), i);
-                    Dot dotP2 = new Dot(squares[squares[0].length-1][i].getX(),
-                            squares[squares[0].length-1][i].getY(), i);
+                    Dot dotP2 = new Dot(squares[squares[0].length - 1][i].getX(),
+                            squares[squares[0].length - 1][i].getY(), i);
 
                     p1.addDot(dotP1);
                     p2.addDot(dotP2);
@@ -329,50 +350,56 @@ public class InitWindow extends Pane {
         drawDots();
     }
 
-    private void drawRect(int x, int y){
-        g.fillRect(x,y, Utility.squareSize, Utility.squareSize);
+    private void drawRect(int x, int y) {
+        g.fillRect(x, y, Utility.squareSize, Utility.squareSize);
     }
 
-    private void drawDots(){
+    private void drawDots() {
         //this.g.setTransform(this.affine);
         Map<Integer, Dot> dots = p1.getDots();
         g.setFill(Color.GREEN);
-        dots.forEach((k,v) -> drawRect(v.getX(),v.getY()));
+        dots.forEach((k, v) -> drawRect(v.getX(), v.getY()));
         dots = p2.getDots();
         g.setFill(Color.BLUE);
-        dots.forEach((k,v) -> drawRect(v.getX(),v.getY()));
+        dots.forEach((k, v) -> drawRect(v.getX(), v.getY()));
     }
 
-    private void comboChanged(){
+    private void comboChanged() {
         this.sizeText.setEditable(defaultDimensions.getSelectionModel().getSelectedIndex() == 0);
-        switch (defaultDimensions.getSelectionModel().getSelectedIndex()){
-            case 0: this.sizeText.clear();
+        switch (defaultDimensions.getSelectionModel().getSelectedIndex()) {
+            case 0:
+                this.sizeText.clear();
                 break;
-            case 1: this.sizeText.setText("5");
+            case 1:
+                this.sizeText.setText("5");
                 break;
-            case 2: this.sizeText.setText("10");
+            case 2:
+                this.sizeText.setText("10");
                 break;
-            case 3: this.sizeText.setText("15");
+            case 3:
+                this.sizeText.setText("15");
                 break;
-            case 4: this.sizeText.setText("20");
+            case 4:
+                this.sizeText.setText("20");
                 break;
-            case 5: this.sizeText.setText("25");
+            case 5:
+                this.sizeText.setText("25");
                 break;
         }
     }
 
-    private void loadGame(){
+    private void loadGame() {
         //TODO calling the load of the file
     }
 
-    private void saveGame(){
+    private void saveGame() {
         //TODO save the actual state of the game into a file
     }
 
-    private void quitGame(){
-        if(turn.getName().equals(p1.getName())){
+    private void quitGame() {
+        if (turn.getName().equals(p1.getName())) {
             Utility.showMessage(p2.getName() + " has won the game!", 2);
-        }else{
+        } else {
             Utility.showMessage(p1.getName() + " has won the game!", 2);
         }
     }
