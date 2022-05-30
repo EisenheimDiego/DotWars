@@ -10,8 +10,8 @@ public class App extends Application {
     @Override
     public void start(Stage stage) {
         InitWindow window = new InitWindow();
-        Scene scene = new Scene(window, 1280, 720);
-        stage.setTitle("My Game");
+        Scene scene = new Scene(window, 1300, 700);
+        stage.setTitle("DotWars");
         stage.setScene(scene);
         stage.show();
     }

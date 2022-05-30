@@ -16,3 +16,9 @@
     - >If you load a game, your current game will be lost if it was not saved before.
     - Restart the current game **("Restart" button)**
     - >Restarting a game will take the game to its initial state where there were no moves or attacks done
+
+# How To Play?
+
+- When your turn to play arrives, you will have two options:
+1. Play: you get to move a dot and attack an enemy dot.
+2. Pass: you pass your turn to the opposite player.

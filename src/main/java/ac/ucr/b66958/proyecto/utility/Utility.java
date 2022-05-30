@@ -1,14 +1,22 @@
 package ac.ucr.b66958.proyecto.utility;
 
+import ac.ucr.b66958.proyecto.domain.Player;
 import ac.ucr.b66958.proyecto.domain.Square;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ComboBox;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 
 public class Utility {
 
     public static double squareSize;
+    public static final String PATH = System.getProperty("user.dir");
 
     public static void showMessage(String message, int flag){
         Alert alert;
@@ -35,7 +43,7 @@ public class Utility {
     }
 
     public static Square[][] initSquares(int n){
-        int x = 0, y = 10;
+        int x = 0, y = 0;
         Square[][] squares = new Square[n][n];
 
         Utility.squareSize = Math.floor(700/n);
@@ -56,6 +64,85 @@ public class Utility {
         ObservableList<String> items = FXCollections.observableArrayList();
         items.addAll("Personalized","5x5", "10x10", "15x15", "20x20", "25x25");
         return new ComboBox<>(items);
+    }
+
+    public static ImageView dotWarsLogo(){
+        InputStream stream = null;
+        try {
+            stream = new FileInputStream("src/main/java/ac/ucr/b66958/proyecto/images/weapon-gun.png");
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        Image image = new Image(stream);
+        return new ImageView(image);
+    }
+
+    public static boolean moveUpY(int y, int position, Player p1, Player p2){
+        if ((y - squareSize) < 0) {
+            return false;
+        }
+        if (p1.getDots().containsKey(position)) {
+            if (p1.getDots().get(position).getY() == (y - squareSize)) {
+                return false;
+            }
+        }
+        if (p2.getDots().containsKey(position)) {
+            if (p2.getDots().get(position).getY() == (y - squareSize)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public static boolean moveDownY(int y, int position, Player p1, Player p2){
+        if ((y + squareSize) > 700) {
+            return false;
+        }
+        if (p1.getDots().containsKey(position)) {
+            if (p1.getDots().get(position).getY() == (y + squareSize)) {
+                return false;
+            }
+        }
+        if (p2.getDots().containsKey(position)) {
+            if (p2.getDots().get(position).getY() == (y + squareSize)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public static boolean moveLeftX(int x, int position, Player p1, Player p2){
+        if ((x - squareSize) < 0) {
+            return false;
+        }
+        if (p1.getDots().containsKey(position)) {
+            if (p1.getDots().get(position).getX() == (x - squareSize)) {
+                return false;
+            }
+        }
+        if (p2.getDots().containsKey(position)) {
+            if (p2.getDots().get(position).getX() == (x - squareSize)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public static boolean moveRightX(int x, int position, Player p1, Player p2){
+        if ((x + squareSize) > 700) {
+            return false;
+        }
+        if (p1.getDots().containsKey(position)) {
+            if (p1.getDots().get(position).getX() == (x + squareSize)) {
+                return false;
+            }
+        }
+        if (p2.getDots().containsKey(position)) {
+            if (p2.getDots().get(position).getX() == (x + squareSize)) {
+                return false;
+            }
+        }
+        return true;
     }
 
 }

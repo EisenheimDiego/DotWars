@@ -13,7 +13,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.scene.input.KeyCode;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
@@ -24,6 +24,7 @@ import java.util.Map;
 
 public class InitWindow extends Pane {
     private final Canvas canvas;
+    private ImageView logo;
     private Player turn;
 
     private Button begin;
@@ -38,7 +39,7 @@ public class InitWindow extends Pane {
     private Button quit, restart;
     private Button save, load;
 
-    private Button move;
+    private Button move, pass;
 
     private Label showTurn;
 
@@ -53,17 +54,17 @@ public class InitWindow extends Pane {
     public InitWindow() {
 
         this.canvas = new Canvas(700, 700);
-        this.dotPosition = 0;
-        this.dotPlayer = -1;
+        this.dotPosition = -1;
+        this.dotPlayer = 0;
 
         initComponents();
         setCoordinates();
 
-        this.getChildren().addAll(this.canvas, this.size, this.sizeText, this.begin,
+        this.getChildren().addAll(this.canvas, this.logo, this.size, this.sizeText, this.begin,
                 this.player1, this.player2, this.player1Name, this.player2Name, this.showTurn,
                 this.defaultDimensions, this.menu);
 
-        this.menu.getChildren().addAll(this.quit, this.save, this.load, this.restart, this.move);
+        this.menu.getChildren().addAll(this.quit, this.save, this.load, this.restart, this.move, this.pass);
 
         events();
         drawBorderedBoard();
@@ -72,6 +73,8 @@ public class InitWindow extends Pane {
     private void initComponents() {
 
         this.g = this.canvas.getGraphicsContext2D();
+
+        this.logo = Utility.dotWarsLogo();
 
         this.begin = new Button("Begin new game");
         this.size = new Label("Board size:");
@@ -106,8 +109,10 @@ public class InitWindow extends Pane {
         this.load = new Button("Load");
 
         this.move = new Button("Move");
+        this.pass = new Button("Pass");
 
         this.defaultDimensions = Utility.initCombo();
+        this.defaultDimensions.setPrefWidth(110);
         this.defaultDimensions.getSelectionModel().select(0);
     }
 
@@ -138,23 +143,16 @@ public class InitWindow extends Pane {
         this.player2Name.setLayoutX(1020);
         this.player2Name.setLayoutY(10);
 
+        this.logo.setLayoutX(1200);
+        this.logo.setLayoutY(10);
+        this.logo.setFitWidth(80);
+        this.logo.setPreserveRatio(true);
+
         this.showTurn.setLayoutX(720);
         this.showTurn.setLayoutY(90);
 
         this.menu.setLayoutX(720);
         this.menu.setLayoutY(120);
-
-        //this.quit.setLayoutX(720);
-        //this.quit.setLayoutY(120);
-
-        //this.save.setLayoutX(770);
-        //this.save.setLayoutY(120);
-
-        //this.load.setLayoutX(820);
-        //this.load.setLayoutY(120);
-
-        //this.move.setLayoutX(820);
-        //this.move.setLayoutY(150);
     }
 
     private void events() {
@@ -166,6 +164,7 @@ public class InitWindow extends Pane {
         this.defaultDimensions.setOnAction(actionEvent -> comboChanged());
         this.setOnMouseClicked(this::squareClicked);
         this.setOnKeyReleased(this::moveKey);
+        this.pass.setOnAction(actionEvent -> assignTurn());
     }
 
     private void assignTurn() {
@@ -183,7 +182,7 @@ public class InitWindow extends Pane {
     }
 
     private void moveKey(KeyEvent event) {
-        if(dotPosition != -1){
+        if (dotPosition != -1) {
             switch (event.getCode()) {
                 case UP:
                     moveDot(4);
@@ -230,14 +229,43 @@ public class InitWindow extends Pane {
     }
 
     private void moveDot(int direction) {
+        boolean flag = true;
         if (this.dotPlayer == 1) {
-            movement(direction, p1.getDots().get(dotPosition), p1);
+            if(validateMovement(direction, p1)){
+                movement(direction, p1.getDots().get(dotPosition), p1);
+            }else{
+                flag = false;
+            }
         } else {
-            movement(direction, p2.getDots().get(dotPosition), p2);
+            if(validateMovement(direction, p2)){
+                movement(direction, p2.getDots().get(dotPosition), p2);
+            }else{
+                flag = false;
+            }
         }
-        dotPosition = -1;
-        assignTurn();
-        repaint();
+        if(flag){
+            dotPosition = -1;
+            assignTurn();
+            repaint();
+        }
+    }
+
+    private boolean validateMovement(int direction, Player p) {
+        Integer positionY = p.getDots().get(dotPosition).getY();
+        Integer positionX = p.getDots().get(dotPosition).getX();
+        if (direction == 4) {
+            return Utility.moveUpY(positionY, dotPosition, p1, p2);
+        }
+        if (direction == 3) {
+            return Utility.moveDownY(positionY, dotPosition, p1, p2);
+        }
+        if (direction == 2) {
+            return Utility.moveLeftX(positionX, dotPosition, p1, p2);
+        }
+        if (direction == 1) {
+            return Utility.moveRightX(positionX, dotPosition, p1, p2);
+        }
+        return true;
     }
 
     private void repaint() {
@@ -326,11 +354,11 @@ public class InitWindow extends Pane {
 
     private void drawBorderedBoard() {
         g.setFill(Color.LIGHTGRAY);
-        g.fillRect(0, 10, 700, 700); //BACKGROUND
+        g.fillRect(0, 0, 700, 700); //BACKGROUND
         g.setFill(Color.BLACK);
         g.setLineWidth(2);
         g.setStroke(Color.BLACK);
-        g.strokeRect(0, 10, 700, 700);
+        g.strokeRect(0, 0, 700, 700);
     }
 
     private void assignDots() {
