@@ -17,6 +17,7 @@ public class Utility {
 
     public static double squareSize;
     public static final String PATH = System.getProperty("user.dir");
+    private static Square[][] squares;
 
     public static void showMessage(String message, int flag){
         Alert alert;
@@ -44,7 +45,7 @@ public class Utility {
 
     public static Square[][] initSquares(int n){
         int x = 0, y = 0;
-        Square[][] squares = new Square[n][n];
+        squares = new Square[n][n];
 
         Utility.squareSize = Math.floor(700/n);
         Utility.squareSize = 5*(Math.floor(Math.abs(squareSize/5)));
@@ -95,7 +96,7 @@ public class Utility {
     }
 
     public static boolean moveDownY(int y, int position, Player p1, Player p2){
-        if ((y + squareSize) > 700) {
+        if((y+squareSize) > squares[0][squares[0].length-1].getY()){
             return false;
         }
         if (p1.getDots().containsKey(position)) {
@@ -115,13 +116,13 @@ public class Utility {
         if ((x - squareSize) < 0) {
             return false;
         }
-        if (p1.getDots().containsKey(position)) {
-            if (p1.getDots().get(position).getX() == (x - squareSize)) {
+        if (p1.getDots().containsKey(position-1)) {
+            if (p1.getDots().get(position-1).getX() == (x - squareSize)) {
                 return false;
             }
         }
-        if (p2.getDots().containsKey(position)) {
-            if (p2.getDots().get(position).getX() == (x - squareSize)) {
+        if (p2.getDots().containsKey(position-1)) {
+            if (p2.getDots().get(position-1).getX() == (x - squareSize)) {
                 return false;
             }
         }
@@ -129,16 +130,16 @@ public class Utility {
     }
 
     public static boolean moveRightX(int x, int position, Player p1, Player p2){
-        if ((x + squareSize) > 700) {
+        if((x+squareSize) > squares[0][squares[0].length-1].getX()){
             return false;
         }
-        if (p1.getDots().containsKey(position)) {
-            if (p1.getDots().get(position).getX() == (x + squareSize)) {
+        if (p1.getDots().containsKey(position+1)) {
+            if (p1.getDots().get(position+1).getX() == (x + squareSize)) {
                 return false;
             }
         }
-        if (p2.getDots().containsKey(position)) {
-            if (p2.getDots().get(position).getX() == (x + squareSize)) {
+        if (p2.getDots().containsKey(position+1)) {
+            if (p2.getDots().get(position+1).getX() == (x + squareSize)) {
                 return false;
             }
         }
