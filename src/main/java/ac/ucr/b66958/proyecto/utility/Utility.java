@@ -96,7 +96,7 @@ public class Utility {
     }
 
     public static boolean moveDownY(int y, int position, Player p1, Player p2){
-        if((y+squareSize) > squares[0][squares[0].length-1].getY()){
+        if((y+squareSize) > squares[squares[0].length-1][squares[0].length-1].getY()){
             return false;
         }
         if (p1.getDots().containsKey(position)) {
@@ -112,16 +112,16 @@ public class Utility {
         return true;
     }
 
-    public static boolean moveLeftX(int x, int position, Player p1, Player p2){
+    public static boolean moveLeftX(int x, int y, int position, Player p1, Player p2){
         if ((x - squareSize) < 0) {
             return false;
         }
-        if (p1.getDots().containsKey(position-1)) {
+        if (p1.getDots().containsKey(position-1) && p1.getDots().get(position-1).getY() == y) {
             if (p1.getDots().get(position-1).getX() == (x - squareSize)) {
                 return false;
             }
         }
-        if (p2.getDots().containsKey(position-1)) {
+        if (p2.getDots().containsKey(position-1) && p2.getDots().get(position-1).getY() == y) {
             if (p2.getDots().get(position-1).getX() == (x - squareSize)) {
                 return false;
             }
@@ -129,16 +129,16 @@ public class Utility {
         return true;
     }
 
-    public static boolean moveRightX(int x, int position, Player p1, Player p2){
+    public static boolean moveRightX(int x, int y, int position, Player p1, Player p2){
         if((x+squareSize) > squares[0][squares[0].length-1].getX()){
             return false;
         }
-        if (p1.getDots().containsKey(position+1)) {
+        if (p1.getDots().containsKey(position+1) && p1.getDots().get(position+1).getY() == y) {
             if (p1.getDots().get(position+1).getX() == (x + squareSize)) {
                 return false;
             }
         }
-        if (p2.getDots().containsKey(position+1)) {
+        if (p2.getDots().containsKey(position+1) && p2.getDots().get(position+1).getY() == y) {
             if (p2.getDots().get(position+1).getX() == (x + squareSize)) {
                 return false;
             }

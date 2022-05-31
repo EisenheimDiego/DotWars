@@ -9,10 +9,7 @@ import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
@@ -43,7 +40,10 @@ public class InitWindow extends Pane {
 
     private Label showTurn;
 
-    ComboBox<String> defaultDimensions;
+    private ComboBox<String> defaultDimensions;
+
+    private ObservableList<Dot> dotsView;
+    private ListView<Dot> dotsListView;
 
     GraphicsContext g;
     Square[][] squares;
@@ -62,7 +62,7 @@ public class InitWindow extends Pane {
 
         this.getChildren().addAll(this.canvas, this.logo, this.size, this.sizeText, this.begin,
                 this.player1, this.player2, this.player1Name, this.player2Name, this.showTurn,
-                this.defaultDimensions, this.menu);
+                this.defaultDimensions, this.menu, this.dotsListView);
 
         this.menu.getChildren().addAll(this.quit, this.save, this.load, this.restart, this.move, this.pass);
 
@@ -114,6 +114,10 @@ public class InitWindow extends Pane {
         this.defaultDimensions = Utility.initCombo();
         this.defaultDimensions.setPrefWidth(110);
         this.defaultDimensions.getSelectionModel().select(0);
+
+        this.dotsView = FXCollections.observableArrayList();
+        this.dotsListView = new ListView<>(dotsView);
+        this.dotsListView.setMaxSize(500, 500);
     }
 
     private void setCoordinates() {
@@ -153,6 +157,9 @@ public class InitWindow extends Pane {
 
         this.menu.setLayoutX(720);
         this.menu.setLayoutY(120);
+
+        this.dotsListView.setLayoutX(720);
+        this.dotsListView.setLayoutY(750);
     }
 
     private void events() {
@@ -174,6 +181,7 @@ public class InitWindow extends Pane {
             turn = p1;
         if (!showTurn.isVisible())
             this.showTurn.setVisible(true);
+        updateDotsList();
         this.showTurn.setText("Player's turn: " + turn.getName());
     }
 
@@ -260,10 +268,10 @@ public class InitWindow extends Pane {
             return Utility.moveDownY(positionY, dotPosition, p1, p2);
         }
         if (direction == 2) {
-            return Utility.moveLeftX(positionX, dotPosition, p1, p2);
+            return Utility.moveLeftX(positionX, positionY, dotPosition, p1, p2);
         }
         if (direction == 1) {
-            return Utility.moveRightX(positionX, dotPosition, p1, p2);
+            return Utility.moveRightX(positionX, positionY,  dotPosition, p1, p2);
         }
         return true;
     }
@@ -273,6 +281,11 @@ public class InitWindow extends Pane {
         g.clearRect(0, 10, 700, 700);
         drawBoard();
         drawDots();
+    }
+
+    private void updateDotsList(){
+        this.dotsView.clear();
+        this.dotsView.addAll(this.turn.getDots().values());
     }
 
     private void beginBoard() {
