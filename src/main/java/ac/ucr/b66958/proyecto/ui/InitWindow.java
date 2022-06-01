@@ -117,7 +117,9 @@ public class InitWindow extends Pane {
 
         this.dotsView = FXCollections.observableArrayList();
         this.dotsListView = new ListView<>(dotsView);
-        this.dotsListView.setMaxSize(500, 500);
+        this.dotsListView.setPrefSize(500, 200);
+
+        disablePlayButtons();
     }
 
     private void setCoordinates() {
@@ -159,7 +161,7 @@ public class InitWindow extends Pane {
         this.menu.setLayoutY(120);
 
         this.dotsListView.setLayoutX(720);
-        this.dotsListView.setLayoutY(750);
+        this.dotsListView.setLayoutY(170);
     }
 
     private void events() {
@@ -306,6 +308,8 @@ public class InitWindow extends Pane {
                     drawBoard();
                     assignDots();
                     assignTurn();
+                    disableInitButtons();
+                    enablePlayButtons();
                 }
             }
         } catch (NumberFormatException nfe) {
@@ -443,7 +447,41 @@ public class InitWindow extends Pane {
         } else {
             Utility.showMessage(p1.getName() + " has won the game!", 2);
         }
+        enableInitButtons();
     }
 
+    private void disableInitButtons(){
+        this.defaultDimensions.setDisable(true);
+        this.begin.setDisable(true);
+        this.size.setDisable(true);
+        this.player1Name.setDisable(true);
+        this.player2Name.setDisable(true);
+    }
 
+    private void enableInitButtons(){
+        this.defaultDimensions.setDisable(false);
+        this.begin.setDisable(false);
+        this.size.setDisable(false);
+        this.defaultDimensions.getSelectionModel().select(0);
+        this.player1Name.setDisable(false);
+        this.player2Name.setDisable(false);
+    }
+
+    private void disablePlayButtons(){
+        this.quit.setDisable(true);
+        this.restart.setDisable(true);
+        this.save.setDisable(true);
+        this.load.setDisable(true);
+        this.move.setDisable(true);
+        this.pass.setDisable(true);
+    }
+
+    private void enablePlayButtons(){
+        this.quit.setDisable(false);
+        this.restart.setDisable(false);
+        this.save.setDisable(false);
+        this.load.setDisable(false);
+        this.move.setDisable(false);
+        this.pass.setDisable(false);
+    }
 }

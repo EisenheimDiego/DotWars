@@ -78,4 +78,11 @@ public class Dot {
     public void setY(Integer y) {
         this.y = y;
     }
+
+    @Override
+    public String toString() {
+        return "Dot at X: "+x+", Y: "+y+" | Life: "+life+
+                " | Strength: "+strength+" | Hit Distance: "+hitDistance+
+                " | Step Distance: "+stepDistance;
+    }
 }
