@@ -36,9 +36,9 @@ public class InitWindow extends Pane {
     private Button quit, restart;
     private Button save, load;
 
-    private Button move, pass;
+    private Button move, pass, attack;
 
-    private Label showTurn;
+    private Label showTurn, showMessage;
 
     private ComboBox<String> defaultDimensions;
 
@@ -50,12 +50,18 @@ public class InitWindow extends Pane {
     Player p1, p2;
     int dotPosition;
     int dotPlayer;
+    int attMov;
+    Dot chosen;
+    int step;
 
     public InitWindow() {
 
         this.canvas = new Canvas(700, 700);
         this.dotPosition = -1;
         this.dotPlayer = 0;
+        this.attMov = 0;
+        this.chosen = null;
+        this.step = 0;
 
         initComponents();
         setCoordinates();
@@ -64,7 +70,8 @@ public class InitWindow extends Pane {
                 this.player1, this.player2, this.player1Name, this.player2Name, this.showTurn,
                 this.defaultDimensions, this.menu, this.dotsListView);
 
-        this.menu.getChildren().addAll(this.quit, this.save, this.load, this.restart, this.move, this.pass);
+        this.menu.getChildren().addAll(this.quit, this.save, this.load, this.restart, this.move, this.pass,
+                this.attack, this.showMessage);
 
         events();
         drawBorderedBoard();
@@ -110,6 +117,9 @@ public class InitWindow extends Pane {
 
         this.move = new Button("Move");
         this.pass = new Button("Pass");
+        this.attack = new Button("Attack!");
+
+        this.showMessage = new Label("");
 
         this.defaultDimensions = Utility.initCombo();
         this.defaultDimensions.setPrefWidth(110);
@@ -169,11 +179,12 @@ public class InitWindow extends Pane {
         this.quit.setOnAction(actionEvent -> quitGame());
         this.save.setOnAction(actionEvent -> saveGame());
         this.load.setOnAction(actionEvent -> loadGame());
-        //this.move.setOnAction(actionEvent -> moveDot());
+        this.move.setOnAction(actionEvent -> infoUnlockBoard(1));
         this.defaultDimensions.setOnAction(actionEvent -> comboChanged());
         this.setOnMouseClicked(this::squareClicked);
         this.setOnKeyReleased(this::moveKey);
         this.pass.setOnAction(actionEvent -> assignTurn());
+        this.attack.setOnAction(actionEvent -> attack());
     }
 
     private void assignTurn() {
@@ -184,29 +195,54 @@ public class InitWindow extends Pane {
         if (!showTurn.isVisible())
             this.showTurn.setVisible(true);
         updateDotsList();
+        step = 0;
+        chosen = null;
         this.showTurn.setText("Player's turn: " + turn.getName());
     }
 
     private void attack() {
-        //TODO ATTACKING METHOD FOR A DOT
+        if (dotPosition == -1) {
+            return;
+        }
+        if (dotPlayer == 1) {
+            if (!p2.getDots().containsKey(dotPosition)) {
+                return;
+            }
+            if (Utility.compareCoordinates(p1.getDots().get(dotPosition).getX(), p2.getDots().get(dotPosition).getX(),
+                    p1.getDots().get(dotPosition).getY(), p2.getDots().get(dotPosition).getY(), 3)) {
+                if (Utility.attackDot(p1.getDots().get(dotPosition), p2.getDots().get(dotPosition))) {
+
+                }
+            }
+        }
     }
 
     private void moveKey(KeyEvent event) {
-        if (dotPosition != -1) {
-            switch (event.getCode()) {
-                case UP:
-                    moveDot(4);
-                    break;
-                case DOWN:
-                    moveDot(3);
-                    break;
-                case LEFT:
-                    moveDot(2);
-                    break;
-                case RIGHT:
-                    moveDot(1);
-                    break;
-            }
+        if (attMov == 0) {
+            return;
+        }
+        if (dotPosition == -1) {
+            return;
+        }
+        if(step < chosen.getStepDistance()){
+            step++;
+        }else{
+            attMov = 0;
+            return ;
+        }
+        switch (event.getCode()) {
+            case UP:
+                moveDot(4);
+                break;
+            case DOWN:
+                moveDot(3);
+                break;
+            case LEFT:
+                moveDot(2);
+                break;
+            case RIGHT:
+                moveDot(1);
+                break;
         }
     }
 
@@ -238,24 +274,44 @@ public class InitWindow extends Pane {
         }
     }
 
+    private void infoUnlockBoard(int info){
+        if (info == 1) {
+            this.showMessage.setText("Choose a dot and move it");
+            action(1);
+        }
+        if (info == 2) {
+            this.showMessage.setText("Choose a dot to be attacked");
+            action(2);
+        }
+    }
+
+    private void action(int action) {
+        if (action == 1) {
+            attMov = 1;
+        }
+        if (action == 2) {
+            attMov = 2;
+        }
+    }
+
     private void moveDot(int direction) {
         boolean flag = true;
         if (this.dotPlayer == 1) {
-            if(validateMovement(direction, p1)){
+            if (validateMovement(direction, p1)) {
                 movement(direction, p1.getDots().get(dotPosition), p1);
-            }else{
+            } else {
                 flag = false;
             }
         } else {
-            if(validateMovement(direction, p2)){
+            if (validateMovement(direction, p2)) {
                 movement(direction, p2.getDots().get(dotPosition), p2);
-            }else{
+            } else {
                 flag = false;
             }
         }
-        if(flag){
-            dotPosition = -1;
-            assignTurn();
+        if (flag) {
+            //dotPosition = -1;
+            //assignTurn();
             repaint();
         }
     }
@@ -273,7 +329,7 @@ public class InitWindow extends Pane {
             return Utility.moveLeftX(positionX, positionY, dotPosition, p1, p2);
         }
         if (direction == 1) {
-            return Utility.moveRightX(positionX, positionY,  dotPosition, p1, p2);
+            return Utility.moveRightX(positionX, positionY, dotPosition, p1, p2);
         }
         return true;
     }
@@ -285,7 +341,7 @@ public class InitWindow extends Pane {
         drawDots();
     }
 
-    private void updateDotsList(){
+    private void updateDotsList() {
         this.dotsView.clear();
         this.dotsView.addAll(this.turn.getDots().values());
     }
@@ -323,6 +379,9 @@ public class InitWindow extends Pane {
         if (event.getX() > 700 || event.getY() > 700 || squares == null) {
             return;
         }
+        if(attMov == 0){
+            return ;
+        }
         repaint();
         g.setStroke(Color.WHITE);
         for (int i = 0; i < squares[0].length; i++) {
@@ -337,6 +396,7 @@ public class InitWindow extends Pane {
                                 this.dotPlayer = 1;
                                 g.strokeRect(p1.getDots().get(j).getX(), p1.getDots().get(j).getY(),
                                         Utility.squareSize, Utility.squareSize);
+                                this.chosen = p1.getDots().get(j);
                             }
                         }
                     } else {
@@ -347,6 +407,7 @@ public class InitWindow extends Pane {
                                 this.dotPlayer = 2;
                                 g.strokeRect(p2.getDots().get(j).getX(), p2.getDots().get(j).getY(),
                                         Utility.squareSize, Utility.squareSize);
+                                this.chosen = p2.getDots().get(j);
                             }
                         }
                     }
@@ -450,7 +511,7 @@ public class InitWindow extends Pane {
         enableInitButtons();
     }
 
-    private void disableInitButtons(){
+    private void disableInitButtons() {
         this.defaultDimensions.setDisable(true);
         this.begin.setDisable(true);
         this.size.setDisable(true);
@@ -458,7 +519,7 @@ public class InitWindow extends Pane {
         this.player2Name.setDisable(true);
     }
 
-    private void enableInitButtons(){
+    private void enableInitButtons() {
         this.defaultDimensions.setDisable(false);
         this.begin.setDisable(false);
         this.size.setDisable(false);
@@ -467,21 +528,23 @@ public class InitWindow extends Pane {
         this.player2Name.setDisable(false);
     }
 
-    private void disablePlayButtons(){
+    private void disablePlayButtons() {
         this.quit.setDisable(true);
         this.restart.setDisable(true);
         this.save.setDisable(true);
         this.load.setDisable(true);
         this.move.setDisable(true);
         this.pass.setDisable(true);
+        this.attack.setDisable(true);
     }
 
-    private void enablePlayButtons(){
+    private void enablePlayButtons() {
         this.quit.setDisable(false);
         this.restart.setDisable(false);
         this.save.setDisable(false);
         this.load.setDisable(false);
         this.move.setDisable(false);
         this.pass.setDisable(false);
+        this.attack.setDisable(false);
     }
 }

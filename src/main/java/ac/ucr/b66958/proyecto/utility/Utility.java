@@ -1,5 +1,6 @@
 package ac.ucr.b66958.proyecto.utility;
 
+import ac.ucr.b66958.proyecto.domain.Dot;
 import ac.ucr.b66958.proyecto.domain.Player;
 import ac.ucr.b66958.proyecto.domain.Square;
 import javafx.collections.FXCollections;
@@ -39,6 +40,7 @@ public class Utility {
             case 1: return (coordinate <= coordinate2 && coordinate2 <= coordinate+squareSize) &&
                     (coordinate3 <= coordinate4 && coordinate4 <= coordinate3+squareSize);
             case 2: return (coordinate == coordinate2 && coordinate3 == coordinate4);
+            case 3: return (coordinate == coordinate2) || coordinate3 == coordinate4;
         }
         return false;
     }
@@ -144,6 +146,15 @@ public class Utility {
             }
         }
         return true;
+    }
+
+    public static boolean attackDot(Dot attacker, Dot defender){
+        if(attacker.getX() == defender.getX()){
+            if(attacker.getX()/squareSize == 0){
+                return true;
+            }
+        }
+        return false;
     }
 
 }
