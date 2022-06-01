@@ -22,3 +22,7 @@
 - When your turn to play arrives, you will have two options:
 1. Play: you get to move a dot and attack an enemy dot.
 2. Pass: you pass your turn to the opposite player.
+
+# Movement
+
+- To move your dots use the key arrows
