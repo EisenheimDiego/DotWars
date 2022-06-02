@@ -53,6 +53,7 @@ public class InitWindow extends Pane {
     int attMov;
     Dot chosen;
     int step;
+    int movements;
 
     public InitWindow() {
 
@@ -62,6 +63,7 @@ public class InitWindow extends Pane {
         this.attMov = 0;
         this.chosen = null;
         this.step = 0;
+        this.movements = 0;
 
         initComponents();
         setCoordinates();
@@ -101,7 +103,7 @@ public class InitWindow extends Pane {
 
         this.menu = new HBox();
         this.menu.setPrefHeight(50);
-        this.menu.setPrefWidth(500);
+        this.menu.setPrefWidth(600);
         this.menu.setStyle("-fx-background-color: #0c0d2b");
         this.menu.setPadding(new Insets(10));
         this.menu.setSpacing(10);
@@ -120,6 +122,7 @@ public class InitWindow extends Pane {
         this.attack = new Button("Attack!");
 
         this.showMessage = new Label("");
+        this.showMessage.setStyle("-fx-text-fill: #ffffff");
 
         this.defaultDimensions = Utility.initCombo();
         this.defaultDimensions.setPrefWidth(110);
@@ -184,16 +187,27 @@ public class InitWindow extends Pane {
         this.setOnMouseClicked(this::squareClicked);
         this.setOnKeyReleased(this::moveKey);
         this.pass.setOnAction(actionEvent -> assignTurn());
-        this.attack.setOnAction(actionEvent -> attack());
+        this.attack.setOnAction(actionEvent -> infoUnlockBoard(2));
+    }
+
+    private void manageMovements(){
+        movements++;
+        if(movements == 2){
+            movements = 0;
+            assignTurn();
+        }
     }
 
     private void assignTurn() {
+
         if (turn.getName().equals(p1.getName()))
             turn = p2;
         else
             turn = p1;
+
         if (!showTurn.isVisible())
             this.showTurn.setVisible(true);
+
         updateDotsList();
         step = 0;
         chosen = null;
@@ -224,11 +238,9 @@ public class InitWindow extends Pane {
         if (dotPosition == -1) {
             return;
         }
-        if(step < chosen.getStepDistance()){
+        if(step < chosen.getStepDistance()) {
             step++;
-        }else{
-            attMov = 0;
-            return ;
+            this.showMessage.setText(chosen.getStepDistance() - step + " movements left");
         }
         switch (event.getCode()) {
             case UP:
@@ -244,6 +256,10 @@ public class InitWindow extends Pane {
                 moveDot(1);
                 break;
         }
+        if (step == chosen.getStepDistance()) {
+            attMov = 0;
+            manageMovements();
+        }
     }
 
     private void movement(int direction, Dot dot, Player p) {
@@ -256,6 +272,7 @@ public class InitWindow extends Pane {
                 newDot.setId(dotPosition + 1);
                 p.getDots().remove(dotPosition);
                 p.addDot(newDot);
+                dotPosition++;
                 break;
             case 2:
                 dot.setX(dot.getX() - (int) Utility.squareSize);
@@ -264,6 +281,7 @@ public class InitWindow extends Pane {
                 newDot.setId(dotPosition - 1);
                 p.getDots().remove(dotPosition);
                 p.addDot(newDot);
+                dotPosition--;
                 break;
             case 3:
                 dot.setY(dot.getY() + (int) Utility.squareSize);
@@ -288,6 +306,8 @@ public class InitWindow extends Pane {
     private void action(int action) {
         if (action == 1) {
             attMov = 1;
+            chosen = null;
+            step = 0;
         }
         if (action == 2) {
             attMov = 2;
