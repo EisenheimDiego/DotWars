@@ -72,7 +72,7 @@ public class Utility {
     public static ImageView dotWarsLogo(){
         InputStream stream = null;
         try {
-            stream = new FileInputStream("src/main/java/ac/ucr/b66958/proyecto/images/weapon-gun.png");
+            stream = new FileInputStream("src/main/java/ac/ucr/b66958/proyecto/images/logo.png");
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
@@ -149,12 +149,10 @@ public class Utility {
     }
 
     public static boolean attackDot(Dot attacker, Dot defender){
-        if(attacker.getX() == defender.getX()){
-            if(attacker.getX()/squareSize == 0){
-                return true;
-            }
-        }
-        return false;
+        int distanceX = attacker.getX()-defender.getX();
+        int distanceY = attacker.getY()-defender.getY();
+        int absoluteDistance = Math.abs((distanceX+distanceY));
+        return absoluteDistance/squareSize <=attacker.getHitDistance();
     }
 
 }

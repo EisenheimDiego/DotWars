@@ -51,9 +51,10 @@ public class InitWindow extends Pane {
     int dotPosition;
     int dotPlayer;
     int attMov;
-    Dot chosen;
+    Dot chosen, enemy;
     int step;
     int movements;
+    boolean choosingEnemy;
 
     public InitWindow() {
 
@@ -62,6 +63,8 @@ public class InitWindow extends Pane {
         this.dotPlayer = 0;
         this.attMov = 0;
         this.chosen = null;
+        this.enemy = null;
+        this.choosingEnemy = false;
         this.step = 0;
         this.movements = 0;
 
@@ -162,9 +165,9 @@ public class InitWindow extends Pane {
         this.player2Name.setLayoutX(1020);
         this.player2Name.setLayoutY(10);
 
-        this.logo.setLayoutX(1200);
-        this.logo.setLayoutY(10);
-        this.logo.setFitWidth(80);
+        this.logo.setLayoutX(1170);
+        this.logo.setLayoutY(8);
+        this.logo.setFitWidth(120);
         this.logo.setPreserveRatio(true);
 
         this.showTurn.setLayoutX(720);
@@ -192,6 +195,7 @@ public class InitWindow extends Pane {
 
     private void manageMovements(){
         movements++;
+        this.showMessage.setText(chosen.getStepDistance() - step + " movements left");
         if(movements == 2){
             movements = 0;
             assignTurn();
@@ -205,34 +209,18 @@ public class InitWindow extends Pane {
         else
             turn = p1;
 
+        this.showTurn.setText("Player's turn: " + turn.getName());
+
         if (!showTurn.isVisible())
             this.showTurn.setVisible(true);
 
         updateDotsList();
         step = 0;
         chosen = null;
-        this.showTurn.setText("Player's turn: " + turn.getName());
-    }
-
-    private void attack() {
-        if (dotPosition == -1) {
-            return;
-        }
-        if (dotPlayer == 1) {
-            if (!p2.getDots().containsKey(dotPosition)) {
-                return;
-            }
-            if (Utility.compareCoordinates(p1.getDots().get(dotPosition).getX(), p2.getDots().get(dotPosition).getX(),
-                    p1.getDots().get(dotPosition).getY(), p2.getDots().get(dotPosition).getY(), 3)) {
-                if (Utility.attackDot(p1.getDots().get(dotPosition), p2.getDots().get(dotPosition))) {
-
-                }
-            }
-        }
     }
 
     private void moveKey(KeyEvent event) {
-        if (attMov == 0) {
+        if (attMov == 0 || attMov == 2) {
             return;
         }
         if (dotPosition == -1) {
@@ -240,7 +228,6 @@ public class InitWindow extends Pane {
         }
         if(step < chosen.getStepDistance()) {
             step++;
-            this.showMessage.setText(chosen.getStepDistance() - step + " movements left");
         }
         switch (event.getCode()) {
             case UP:
@@ -298,7 +285,7 @@ public class InitWindow extends Pane {
             action(1);
         }
         if (info == 2) {
-            this.showMessage.setText("Choose a dot to be attacked");
+            this.showMessage.setText("Choose your attacker");
             action(2);
         }
     }
@@ -311,6 +298,12 @@ public class InitWindow extends Pane {
         }
         if (action == 2) {
             attMov = 2;
+            chosen = null;
+            step = 0;
+        }
+        if(action == 3){
+            choosingEnemy = true;
+            this.showMessage.setText("Choose your enemy");
         }
     }
 
@@ -403,6 +396,15 @@ public class InitWindow extends Pane {
             return ;
         }
         repaint();
+        if(choosingEnemy){
+            enemyClicked(event);
+            choosingEnemy = false;
+        }else{
+            dotClicked(event);
+        }
+    }
+
+    private void dotClicked(MouseEvent event){
         g.setStroke(Color.WHITE);
         for (int i = 0; i < squares[0].length; i++) {
             for (int j = 0; j < squares[0].length; j++) {
@@ -432,9 +434,62 @@ public class InitWindow extends Pane {
                         }
                     }
                     this.dotPosition = j;
+                    if(attMov == 2){
+                        action(3);
+                    }
                 }
             }
         }
+    }
+
+    private void enemyClicked(MouseEvent event){
+        g.setStroke(Color.WHITE);
+        for (int i = 0; i < squares[0].length; i++) {
+            for (int j = 0; j < squares[0].length; j++) {
+                if (Utility.compareCoordinates(squares[i][j].getX(), event.getX(),
+                        squares[i][j].getY(), event.getY(), 1)) {
+                    if (turn == p1) {
+                        if (p2.getDots().containsKey(j)) {
+                            if (Utility.compareCoordinates(p2.getDots().get(j).getX(), squares[i][j].getX(),
+                                    p2.getDots().get(j).getY(), squares[i][j].getY(), 2)) {
+                                System.out.println(p2.getDots().get(j).getId() + " of player 2");
+                                g.strokeRect(p2.getDots().get(j).getX(), p2.getDots().get(j).getY(),
+                                        Utility.squareSize, Utility.squareSize);
+                                this.enemy = p2.getDots().get(j);
+                            }
+                        }
+                    } else {
+                        if (p1.getDots().containsKey(j)) {
+                            if (Utility.compareCoordinates(p1.getDots().get(j).getX(), squares[i][j].getX(),
+                                    p1.getDots().get(j).getY(), squares[i][j].getY(), 2)) {
+                                System.out.println(p1.getDots().get(j).getId() + " of player 1");
+                                g.strokeRect(p1.getDots().get(j).getX(), p1.getDots().get(j).getY(),
+                                        Utility.squareSize, Utility.squareSize);
+                                this.enemy = p1.getDots().get(j);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        boolean attackPossible = Utility.attackDot(chosen, enemy);
+        infoAttack(attackPossible);
+    }
+
+    private void infoAttack(boolean result){
+        if(result){
+            Utility.showMessage("You've attacked", 2);
+            attack();
+            step++;
+        }else{
+            Utility.showMessage("You're enemy is too far", 1);
+        }
+        this.chosen = null;
+        this.enemy = null;
+        attMov = 0;
+    }
+
+    private void attack() {
     }
 
     private void drawBoard() {
