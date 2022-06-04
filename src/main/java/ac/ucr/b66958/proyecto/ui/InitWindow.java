@@ -17,7 +17,9 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 
+import java.util.Iterator;
 import java.util.Map;
+import java.util.stream.Stream;
 
 public class InitWindow extends Pane {
     private final Canvas canvas;
@@ -59,17 +61,13 @@ public class InitWindow extends Pane {
     public InitWindow() {
 
         this.canvas = new Canvas(700, 700);
-        this.dotPosition = -1;
-        this.dotPlayer = 0;
-        this.attMov = 0;
-        this.chosen = null;
-        this.enemy = null;
-        this.choosingEnemy = false;
         this.step = 0;
+        this.dotPlayer = 0;
         this.movements = 0;
 
         initComponents();
         setCoordinates();
+        initAttributes();
 
         this.getChildren().addAll(this.canvas, this.logo, this.size, this.sizeText, this.begin,
                 this.player1, this.player2, this.player1Name, this.player2Name, this.showTurn,
@@ -180,6 +178,15 @@ public class InitWindow extends Pane {
         this.dotsListView.setLayoutY(170);
     }
 
+    private void initAttributes(){
+        this.dotPosition = -1;
+        this.attMov = 0;
+        this.chosen = null;
+        this.enemy = null;
+        this.choosingEnemy = false;
+        this.step = 0;
+    }
+
     private void events() {
         this.begin.setOnAction(actionEvent -> beginBoard());
         this.quit.setOnAction(actionEvent -> quitGame());
@@ -189,34 +196,32 @@ public class InitWindow extends Pane {
         this.defaultDimensions.setOnAction(actionEvent -> comboChanged());
         this.setOnMouseClicked(this::squareClicked);
         this.setOnKeyReleased(this::moveKey);
-        this.pass.setOnAction(actionEvent -> assignTurn());
+        this.pass.setOnAction(actionEvent -> newAction());
         this.attack.setOnAction(actionEvent -> infoUnlockBoard(2));
     }
 
-    private void manageMovements(){
+    private void newAction(){
         movements++;
-        this.showMessage.setText(chosen.getStepDistance() - step + " movements left");
-        if(movements == 2){
+        if(movements == 1){
+            messageInfo("Choose your action: 2/2");
+            initAttributes();
+        }else if(movements == 2){
             movements = 0;
             assignTurn();
         }
     }
 
     private void assignTurn() {
-
         if (turn.getName().equals(p1.getName()))
             turn = p2;
-        else
-            turn = p1;
-
+        else turn = p1;
         this.showTurn.setText("Player's turn: " + turn.getName());
 
         if (!showTurn.isVisible())
             this.showTurn.setVisible(true);
-
-        updateDotsList();
+        messageInfo("Choose your action: 1/2");
         step = 0;
-        chosen = null;
+        updateDotsList();
     }
 
     private void moveKey(KeyEvent event) {
@@ -225,9 +230,6 @@ public class InitWindow extends Pane {
         }
         if (dotPosition == -1) {
             return;
-        }
-        if(step < chosen.getStepDistance()) {
-            step++;
         }
         switch (event.getCode()) {
             case UP:
@@ -242,10 +244,6 @@ public class InitWindow extends Pane {
             case RIGHT:
                 moveDot(1);
                 break;
-        }
-        if (step == chosen.getStepDistance()) {
-            attMov = 0;
-            manageMovements();
         }
     }
 
@@ -281,13 +279,19 @@ public class InitWindow extends Pane {
 
     private void infoUnlockBoard(int info){
         if (info == 1) {
-            this.showMessage.setText("Choose a dot and move it");
+            messageInfo("Choose a dot and move it");
             action(1);
         }
         if (info == 2) {
-            this.showMessage.setText("Choose your attacker");
+            messageInfo("Choose your attacker");
             action(2);
         }
+    }
+
+    private void messageInfo(String message){
+        if(!this.showMessage.isVisible())
+            this.showMessage.setVisible(true);
+        this.showMessage.setText(message);
     }
 
     private void action(int action) {
@@ -310,23 +314,25 @@ public class InitWindow extends Pane {
     private void moveDot(int direction) {
         boolean flag = true;
         if (this.dotPlayer == 1) {
-            if (validateMovement(direction, p1)) {
+            if (validateMovement(direction, p1))
                 movement(direction, p1.getDots().get(dotPosition), p1);
-            } else {
-                flag = false;
-            }
+            else flag = false;
         } else {
-            if (validateMovement(direction, p2)) {
+            if (validateMovement(direction, p2))
                 movement(direction, p2.getDots().get(dotPosition), p2);
-            } else {
-                flag = false;
-            }
+            else flag = false;
         }
-        if (flag) {
-            //dotPosition = -1;
-            //assignTurn();
-            repaint();
-        }
+        if (flag) dotMoved();
+    }
+
+    private void dotMoved(){
+        repaint();
+        step++;
+        if (step == chosen.getStepDistance()) {
+            attMov = 0;
+            newAction();
+        }else
+        messageInfo(chosen.getStepDistance() - step + " movements left");
     }
 
     private boolean validateMovement(int direction, Player p) {
@@ -395,10 +401,8 @@ public class InitWindow extends Pane {
         if(attMov == 0){
             return ;
         }
-        repaint();
         if(choosingEnemy){
             enemyClicked(event);
-            choosingEnemy = false;
         }else{
             dotClicked(event);
         }
@@ -433,9 +437,11 @@ public class InitWindow extends Pane {
                             }
                         }
                     }
-                    this.dotPosition = j;
-                    if(attMov == 2){
-                        action(3);
+                    if(this.chosen != null){
+                        this.dotPosition = j;
+                        if(attMov == 2){
+                            action(3);
+                        }
                     }
                 }
             }
@@ -472,8 +478,11 @@ public class InitWindow extends Pane {
                 }
             }
         }
-        boolean attackPossible = Utility.attackDot(chosen, enemy);
-        infoAttack(attackPossible);
+        if(this.enemy != null){
+            boolean attackPossible = Utility.attackDot(chosen, enemy);
+            infoAttack(attackPossible);
+            choosingEnemy = false;
+        }
     }
 
     private void infoAttack(boolean result){
@@ -483,6 +492,7 @@ public class InitWindow extends Pane {
             step++;
         }else{
             Utility.showMessage("You're enemy is too far", 1);
+            newAction();
         }
         this.chosen = null;
         this.enemy = null;
@@ -490,6 +500,33 @@ public class InitWindow extends Pane {
     }
 
     private void attack() {
+        if(turn == p1){
+            p2.getDots().get(enemy.getId())
+                    .setLife(p2.getDots().get(enemy.getId()).getLife()
+                    -chosen.getStrength());
+            deadDots(p2);
+        }else{
+            p1.getDots().get(enemy.getId())
+                    .setLife(p1.getDots().get(enemy.getId()).getLife()
+                            -chosen.getStrength());
+            deadDots(p1);
+        }
+        repaint();
+        newAction();
+    }
+
+    private void deadDots(Player toCheck){
+        Iterator<Map.Entry<Integer, Dot>> dots = toCheck.getDots().entrySet().iterator();
+        int posDead = -1;
+        while(dots.hasNext()){
+            Dot temp = dots.next().getValue();
+            if(temp.getLife() <= 0){
+                posDead = temp.getId();
+            }
+        }
+        if(posDead > -1){
+            toCheck.getDots().remove(posDead);
+        }
     }
 
     private void drawBoard() {
