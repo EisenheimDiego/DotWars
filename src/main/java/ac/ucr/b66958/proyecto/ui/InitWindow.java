@@ -1,6 +1,7 @@
 package ac.ucr.b66958.proyecto.ui;
 
 import ac.ucr.b66958.proyecto.domain.Dot;
+import ac.ucr.b66958.proyecto.domain.Memento;
 import ac.ucr.b66958.proyecto.domain.Player;
 import ac.ucr.b66958.proyecto.domain.Square;
 import ac.ucr.b66958.proyecto.utility.Utility;
@@ -19,7 +20,6 @@ import javafx.scene.paint.Color;
 
 import java.util.Iterator;
 import java.util.Map;
-import java.util.stream.Stream;
 
 public class InitWindow extends Pane {
     private final Canvas canvas;
@@ -47,16 +47,18 @@ public class InitWindow extends Pane {
     private ObservableList<Dot> dotsView;
     private ListView<Dot> dotsListView;
 
-    GraphicsContext g;
-    Square[][] squares;
-    Player p1, p2;
-    int dotPosition;
-    int dotPlayer;
-    int attMov;
-    Dot chosen, enemy;
-    int step;
-    int movements;
-    boolean choosingEnemy;
+    private Memento memento;
+
+    private GraphicsContext g;
+    private Square[][] squares;
+    private Player p1, p2;
+    private int dotPosition;
+    private int dotPlayer;
+    private int attMov;
+    private Dot chosen, enemy;
+    private int step;
+    private int movements;
+    private boolean choosingEnemy;
 
     public InitWindow() {
 
@@ -190,6 +192,7 @@ public class InitWindow extends Pane {
     private void events() {
         this.begin.setOnAction(actionEvent -> beginBoard());
         this.quit.setOnAction(actionEvent -> quitGame());
+        this.restart.setOnAction(actionEvent -> restartGame());
         this.save.setOnAction(actionEvent -> saveGame());
         this.load.setOnAction(actionEvent -> loadGame());
         this.move.setOnAction(actionEvent -> infoUnlockBoard(1));
@@ -354,15 +357,34 @@ public class InitWindow extends Pane {
     }
 
     private void repaint() {
-        g.setFill(Color.LIGHTGRAY);
-        g.clearRect(0, 10, 700, 700);
+        clearBoard();
         drawBoard();
         drawDots();
+    }
+
+    private void clearBoard(){
+        g.setFill(Color.LIGHTGRAY);
+        g.clearRect(0, 10, 700, 700);
     }
 
     private void updateDotsList() {
         this.dotsView.clear();
         this.dotsView.addAll(this.turn.getDots().values());
+    }
+
+    private void restartGame(){
+        int nMem = this.memento.getN();
+        squares = Utility.initSquares(nMem);
+        p1 = this.memento.getP1();
+        p2 = this.memento.getP2();
+        turn = p2;
+        clearBoard();
+        drawBoard();
+        assignDots();
+        assignTurn();
+        disableInitButtons();
+        enablePlayButtons();
+        Utility.showMessage("Game restarted", 2);
     }
 
     private void beginBoard() {
@@ -385,6 +407,8 @@ public class InitWindow extends Pane {
                     assignTurn();
                     disableInitButtons();
                     enablePlayButtons();
+                    this.memento = new Memento(n, Utility.squareSize,
+                            new Player(player1Name.getText()), new Player(player2Name.getText()));
                 }
             }
         } catch (NumberFormatException nfe) {
@@ -513,6 +537,7 @@ public class InitWindow extends Pane {
         }
         repaint();
         newAction();
+        checkLoser();
     }
 
     private void deadDots(Player toCheck){
@@ -615,12 +640,35 @@ public class InitWindow extends Pane {
     }
 
     private void quitGame() {
+        clearGame();
         if (turn.getName().equals(p1.getName())) {
             Utility.showMessage(p2.getName() + " has won the game!", 2);
         } else {
             Utility.showMessage(p1.getName() + " has won the game!", 2);
         }
+    }
+
+    private void clearGame(){
+        initAttributes();
         enableInitButtons();
+        disablePlayButtons();
+        showTurn.setText("");
+        player1Name.clear();
+        player2Name.clear();
+        dotsView.clear();
+        clearBoard();
+        drawBorderedBoard();
+        messageInfo("The game was finished");
+    }
+
+    private void checkLoser(){
+        if(p1.getDots().size() == 0){
+            turn = p2;
+            quitGame();
+        }else if(p2.getDots().size() == 0){
+            turn = p1;
+            quitGame();
+        }
     }
 
     private void disableInitButtons() {

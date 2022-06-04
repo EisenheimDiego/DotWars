@@ -12,6 +12,7 @@ public class App extends Application {
         InitWindow window = new InitWindow();
         Scene scene = new Scene(window, 1300, 700);
         stage.setTitle("DotWars");
+        stage.setResizable(false);
         stage.setScene(scene);
         stage.show();
     }
