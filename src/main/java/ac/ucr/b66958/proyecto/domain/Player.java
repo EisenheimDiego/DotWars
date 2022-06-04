@@ -7,10 +7,12 @@ public class Player {
 
     private String name;
     private Map<Integer, Dot> dots;
+    private int dotsLost;
 
     public Player(String name) {
         this.name = name;
         this.dots = new HashMap<>();
+        this.dotsLost = 0;
     }
 
     public void addDot(Dot dot){
@@ -23,5 +25,13 @@ public class Player {
 
     public Map<Integer, Dot> getDots() {
         return dots;
+    }
+
+    public int getDotsLost() {
+        return dotsLost;
+    }
+
+    public void newDotLost(){
+        dotsLost++;
     }
 }

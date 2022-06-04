@@ -40,7 +40,7 @@ public class InitWindow extends Pane {
 
     private Button move, pass, attack;
 
-    private Label showTurn, showMessage;
+    private Label showTurn, showMessage, dotsLost;
 
     private ComboBox<String> defaultDimensions;
 
@@ -73,7 +73,7 @@ public class InitWindow extends Pane {
 
         this.getChildren().addAll(this.canvas, this.logo, this.size, this.sizeText, this.begin,
                 this.player1, this.player2, this.player1Name, this.player2Name, this.showTurn,
-                this.defaultDimensions, this.menu, this.dotsListView);
+                this.defaultDimensions, this.menu, this.dotsListView, this.dotsLost);
 
         this.menu.getChildren().addAll(this.quit, this.save, this.load, this.restart, this.move, this.pass,
                 this.attack, this.showMessage);
@@ -94,6 +94,9 @@ public class InitWindow extends Pane {
 
         this.showTurn = new Label("Player's turn: ");
         this.showTurn.setVisible(false);
+
+        this.dotsLost = new Label("");
+        this.dotsLost.setVisible(false);
 
         this.player1 = new Label("Player 1:");
         this.player1Name = new TextField();
@@ -173,6 +176,9 @@ public class InitWindow extends Pane {
         this.showTurn.setLayoutX(720);
         this.showTurn.setLayoutY(90);
 
+        this.dotsLost.setLayoutX(950);
+        this.dotsLost.setLayoutY(90);
+
         this.menu.setLayoutX(720);
         this.menu.setLayoutY(120);
 
@@ -218,10 +224,15 @@ public class InitWindow extends Pane {
         if (turn.getName().equals(p1.getName()))
             turn = p2;
         else turn = p1;
-        this.showTurn.setText("Player's turn: " + turn.getName());
 
+        this.showTurn.setText("Player's turn: " + turn.getName());
         if (!showTurn.isVisible())
             this.showTurn.setVisible(true);
+
+        this.dotsLost.setText("Dots lost: "+turn.getDotsLost());
+        if (!dotsLost.isVisible())
+            this.dotsLost.setVisible(true);
+
         messageInfo("Choose your action: 1/2");
         step = 0;
         updateDotsList();
@@ -281,6 +292,7 @@ public class InitWindow extends Pane {
     }
 
     private void infoUnlockBoard(int info){
+        disablePlayButtons();
         if (info == 1) {
             messageInfo("Choose a dot and move it");
             action(1);
@@ -333,6 +345,7 @@ public class InitWindow extends Pane {
         step++;
         if (step == chosen.getStepDistance()) {
             attMov = 0;
+            enablePlayButtons();
             newAction();
         }else
         messageInfo(chosen.getStepDistance() - step + " movements left");
@@ -518,6 +531,7 @@ public class InitWindow extends Pane {
             Utility.showMessage("You're enemy is too far", 1);
             newAction();
         }
+        enablePlayButtons();
         this.chosen = null;
         this.enemy = null;
         attMov = 0;
@@ -551,6 +565,7 @@ public class InitWindow extends Pane {
         }
         if(posDead > -1){
             toCheck.getDots().remove(posDead);
+            toCheck.newDotLost();
         }
     }
 
@@ -653,6 +668,7 @@ public class InitWindow extends Pane {
         enableInitButtons();
         disablePlayButtons();
         showTurn.setText("");
+        dotsLost.setText("");
         player1Name.clear();
         player2Name.clear();
         dotsView.clear();
