@@ -12,6 +12,7 @@ import javafx.geometry.Insets;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
@@ -53,7 +54,7 @@ public class InitWindow extends Pane {
     private final GameService gameService;
 
     private GraphicsContext g;
-    private Square[][] squares;
+    private Square[][] squares, manaDots;
     private Player p1, p2;
     private int dotPosition;
     private int dotPlayer;
@@ -201,7 +202,7 @@ public class InitWindow extends Pane {
     private void events() {
         this.begin.setOnAction(actionEvent -> beginBoard());
         this.quit.setOnAction(actionEvent -> quitGame());
-        this.restart.setOnAction(actionEvent -> restartGame(this.memento));
+        this.restart.setOnAction(actionEvent -> restartGame(this.memento, true));
         this.save.setOnAction(actionEvent -> saveGame());
         this.load.setOnAction(actionEvent -> loadGame());
         this.move.setOnAction(actionEvent -> infoUnlockBoard(1));
@@ -388,15 +389,17 @@ public class InitWindow extends Pane {
         this.dotsView.addAll(this.turn.getDots().values());
     }
 
-    private void restartGame(Memento memento){
+    private void restartGame(Memento memento, boolean flag){
         obtainMementoData(memento);
         clearBoard();
         drawBoard();
-        assignDots();
+        if(flag) assignDots();
+        else drawDots();
         assignTurn();
         disableInitButtons();
         enablePlayButtons();
-        Utility.showMessage("Game restarted", 2);
+        if(flag) Utility.showMessage("Game restarted", 2);
+        else Utility.showMessage("Game loaded", 2);
     }
 
     private void obtainMementoData(Memento memento){
@@ -617,6 +620,16 @@ public class InitWindow extends Pane {
         drawDots();
     }
 
+    private void drawManaDots(){
+        manaDots = new Square[2][p1.getDots().size()];
+        for (int i = 0; i < 2; i++) {
+            for (int j = 0; j < p1.getDots().size(); j++) {
+                System.out.println("Random");
+                drawRect(1,1);
+            }
+        }
+    }
+
     private void drawRect(int x, int y) {
         g.fillRect(x, y, Utility.squareSize, Utility.squareSize);
     }
@@ -625,10 +638,14 @@ public class InitWindow extends Pane {
         //this.g.setTransform(this.affine);
         Map<Integer, Dot> dots = p1.getDots();
         g.setFill(Color.GREEN);
-        dots.forEach((k, v) -> drawRect(v.getX(), v.getY()));
+        dots.forEach((k, v) -> g.drawImage(
+                new Image(Utility.player1Path),
+                v.getX(), v.getY(), Utility.squareSize, Utility.squareSize));
         dots = p2.getDots();
         g.setFill(Color.BLUE);
-        dots.forEach((k, v) -> drawRect(v.getX(), v.getY()));
+        dots.forEach((k, v) -> g.drawImage(
+                new Image(Utility.player2Path),
+                v.getX(), v.getY(), Utility.squareSize, Utility.squareSize));
     }
 
     private void comboChanged() {
@@ -657,7 +674,7 @@ public class InitWindow extends Pane {
 
     private void loadGame() {
         Memento loaded = this.gameService.loadGame();
-        restartGame(loaded);
+        restartGame(loaded, false);
     }
 
     private void saveGame() {

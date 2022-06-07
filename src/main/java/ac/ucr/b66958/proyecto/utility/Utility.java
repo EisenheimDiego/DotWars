@@ -18,6 +18,8 @@ public class Utility {
 
     public static double squareSize;
     public static final String PATH = System.getProperty("user.dir");
+    public static String player1Path = "file:src/main/java/ac/ucr/b66958/proyecto/images/player1.png";
+    public static String player2Path = "file:src/main/java/ac/ucr/b66958/proyecto/images/player2.png";
     private static Square[][] squares;
 
     public static void showMessage(String message, int flag){
