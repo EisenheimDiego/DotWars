@@ -9,7 +9,7 @@ public class App extends Application {
 
     @Override
     public void start(Stage stage) {
-        InitWindow window = new InitWindow();
+        InitWindow window = new InitWindow(stage);
         Scene scene = new Scene(window, 1300, 700);
         stage.setTitle("DotWars");
         stage.setResizable(false);

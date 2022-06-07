@@ -15,6 +15,9 @@ public class Player {
         this.dotsLost = 0;
     }
 
+    public Player() {
+    }
+
     public void addDot(Dot dot){
         this.dots.put(dot.getId(), dot);
     }
@@ -29,6 +32,18 @@ public class Player {
 
     public int getDotsLost() {
         return dotsLost;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setDots(Map<Integer, Dot> dots) {
+        this.dots = dots;
+    }
+
+    public void setDotsLost(int dotsLost) {
+        this.dotsLost = dotsLost;
     }
 
     public void newDotLost(){

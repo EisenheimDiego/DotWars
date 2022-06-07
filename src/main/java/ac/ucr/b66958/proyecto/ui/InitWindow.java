@@ -4,6 +4,7 @@ import ac.ucr.b66958.proyecto.domain.Dot;
 import ac.ucr.b66958.proyecto.domain.Memento;
 import ac.ucr.b66958.proyecto.domain.Player;
 import ac.ucr.b66958.proyecto.domain.Square;
+import ac.ucr.b66958.proyecto.service.GameService;
 import ac.ucr.b66958.proyecto.utility.Utility;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -17,6 +18,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
+import javafx.stage.Stage;
 
 import java.util.Iterator;
 import java.util.Map;
@@ -48,6 +50,7 @@ public class InitWindow extends Pane {
     private ListView<Dot> dotsListView;
 
     private Memento memento;
+    private final GameService gameService;
 
     private GraphicsContext g;
     private Square[][] squares;
@@ -60,13 +63,13 @@ public class InitWindow extends Pane {
     private int movements;
     private boolean choosingEnemy;
 
-    public InitWindow() {
+    public InitWindow(Stage stage) {
 
         this.canvas = new Canvas(700, 700);
         this.step = 0;
         this.dotPlayer = 0;
         this.movements = 0;
-
+        this.gameService = new GameService(stage);
         initComponents();
         setCoordinates();
         initAttributes();
@@ -198,7 +201,7 @@ public class InitWindow extends Pane {
     private void events() {
         this.begin.setOnAction(actionEvent -> beginBoard());
         this.quit.setOnAction(actionEvent -> quitGame());
-        this.restart.setOnAction(actionEvent -> restartGame());
+        this.restart.setOnAction(actionEvent -> restartGame(this.memento));
         this.save.setOnAction(actionEvent -> saveGame());
         this.load.setOnAction(actionEvent -> loadGame());
         this.move.setOnAction(actionEvent -> infoUnlockBoard(1));
@@ -385,12 +388,8 @@ public class InitWindow extends Pane {
         this.dotsView.addAll(this.turn.getDots().values());
     }
 
-    private void restartGame(){
-        int nMem = this.memento.getN();
-        squares = Utility.initSquares(nMem);
-        p1 = this.memento.getP1();
-        p2 = this.memento.getP2();
-        turn = p2;
+    private void restartGame(Memento memento){
+        obtainMementoData(memento);
         clearBoard();
         drawBoard();
         assignDots();
@@ -398,6 +397,16 @@ public class InitWindow extends Pane {
         disableInitButtons();
         enablePlayButtons();
         Utility.showMessage("Game restarted", 2);
+    }
+
+    private void obtainMementoData(Memento memento){
+        int nMem = memento.getN();
+        squares = Utility.initSquares(nMem);
+        p1 = memento.getP1();
+        p2 = memento.getP2();
+        turn = p2;
+        this.player1Name.setText(p1.getName());
+        this.player2Name.setText(p2.getName());
     }
 
     private void beginBoard() {
@@ -647,11 +656,12 @@ public class InitWindow extends Pane {
     }
 
     private void loadGame() {
-        //TODO calling the load of the file
+        Memento loaded = this.gameService.loadGame();
+        restartGame(loaded);
     }
 
     private void saveGame() {
-        //TODO save the actual state of the game into a file
+        this.gameService.saveGame(new Memento(squares[0].length, Utility.squareSize, p1, p2));
     }
 
     private void quitGame() {

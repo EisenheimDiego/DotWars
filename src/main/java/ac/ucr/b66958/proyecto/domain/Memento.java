@@ -13,6 +13,9 @@ public class Memento {
         this.p2 = p2;
     }
 
+    public Memento() {
+    }
+
     public int getN() {
         return n;
     }
