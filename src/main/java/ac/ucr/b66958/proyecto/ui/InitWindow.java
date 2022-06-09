@@ -63,6 +63,7 @@ public class InitWindow extends Pane {
     private int step;
     private int movements;
     private boolean choosingEnemy;
+    private int initialDots;
 
     public InitWindow(Stage stage) {
 
@@ -70,6 +71,7 @@ public class InitWindow extends Pane {
         this.step = 0;
         this.dotPlayer = 0;
         this.movements = 0;
+        this.initialDots = 0;
         this.gameService = new GameService(stage);
         initComponents();
         setCoordinates();
@@ -428,12 +430,14 @@ public class InitWindow extends Pane {
                     turn = p2;
                     squares = Utility.initSquares(n);
                     drawBoard();
+                    this.memento = new Memento(n, Utility.squareSize,
+                            new Player(player1Name.getText()), new Player(player2Name.getText()));
                     assignDots();
+                    initialDots = p1.getDots().size();
+                    drawManaDots();
                     assignTurn();
                     disableInitButtons();
                     enablePlayButtons();
-                    this.memento = new Memento(n, Utility.squareSize,
-                            new Player(player1Name.getText()), new Player(player2Name.getText()));
                 }
             }
         } catch (NumberFormatException nfe) {
@@ -621,17 +625,13 @@ public class InitWindow extends Pane {
     }
 
     private void drawManaDots(){
-        manaDots = new Square[2][p1.getDots().size()];
+        manaDots = Utility.initMana(squares[0].length, this.initialDots);
         for (int i = 0; i < 2; i++) {
-            for (int j = 0; j < p1.getDots().size(); j++) {
-                System.out.println("Random");
-                drawRect(1,1);
+            for (int j = 0; j < manaDots[0].length; j++) {
+                g.drawImage(new Image(Utility.mana), manaDots[i][j].getX(), manaDots[i][j].getY()
+                , Utility.squareSize, Utility.squareSize);
             }
         }
-    }
-
-    private void drawRect(int x, int y) {
-        g.fillRect(x, y, Utility.squareSize, Utility.squareSize);
     }
 
     private void drawDots() {
@@ -655,20 +655,18 @@ public class InitWindow extends Pane {
                 this.sizeText.clear();
                 break;
             case 1:
-                this.sizeText.setText("5");
-                break;
-            case 2:
                 this.sizeText.setText("10");
                 break;
-            case 3:
+            case 2:
                 this.sizeText.setText("15");
                 break;
-            case 4:
+            case 3:
                 this.sizeText.setText("20");
                 break;
-            case 5:
+            case 4:
                 this.sizeText.setText("25");
                 break;
+            case 5:
         }
     }
 

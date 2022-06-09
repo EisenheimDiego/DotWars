@@ -13,6 +13,8 @@ import javafx.scene.image.ImageView;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Random;
 
 public class Utility {
 
@@ -20,7 +22,12 @@ public class Utility {
     public static final String PATH = System.getProperty("user.dir");
     public static String player1Path = "file:src/main/java/ac/ucr/b66958/proyecto/images/player1.png";
     public static String player2Path = "file:src/main/java/ac/ucr/b66958/proyecto/images/player2.png";
+    public static String mana = "file:src/main/java/ac/ucr/b66958/proyecto/images/manaSquare.png";
     private static Square[][] squares;
+    private static int n;
+    private static ArrayList<Integer> posX = new ArrayList<>();
+    private static ArrayList<Integer> posY = new ArrayList<>();
+    private static Random random = new Random();
 
     public static void showMessage(String message, int flag){
         Alert alert;
@@ -50,6 +57,7 @@ public class Utility {
     public static Square[][] initSquares(int n){
         int x = 0, y = 0;
         squares = new Square[n][n];
+        Utility.n = n;
 
         Utility.squareSize = Math.floor(700/n);
         Utility.squareSize = 5*(Math.floor(Math.abs(squareSize/5)));
@@ -67,7 +75,7 @@ public class Utility {
 
     public static ComboBox<String> initCombo(){
         ObservableList<String> items = FXCollections.observableArrayList();
-        items.addAll("Personalized","5x5", "10x10", "15x15", "20x20", "25x25");
+        items.addAll("Personalized", "10x10", "15x15", "20x20", "25x25");
         return new ComboBox<>(items);
     }
 
@@ -155,6 +163,81 @@ public class Utility {
         int distanceY = attacker.getY()-defender.getY();
         int absoluteDistance = Math.abs((distanceX+distanceY));
         return absoluteDistance/squareSize <=attacker.getHitDistance();
+    }
+
+    public static Square[][] initMana(int columns, int dotsQuantity){
+        Square[][] manaDots = new Square[2][dotsQuantity];
+
+        System.out.println("Vamos a crear: "+dotsQuantity+" dots de mana");
+        System.out.println("En: "+columns+" columnas x filas");
+
+        for (int i = 0; i < dotsQuantity; i++) {
+            System.out.println(i+1);
+            if(i+1 <= (dotsQuantity/2)){
+                System.out.println("Es menor a "+dotsQuantity/2);
+                if((i+1) % 2 == 0){ //FIRST QUARTER
+                    System.out.println("Es par");
+                    manaDots[0][i] =
+                            new Square((int)(randomPosX((int)(Math.floor((double)columns/2)),0)*squareSize),
+                            (int)(randomPosY((int)(Math.floor((double)columns/2)),1)*squareSize));
+                    manaDots[1][i] = new Square((int)(randomPosX((columns/2),0)*squareSize),
+                            (int)(randomPosY(columns-1,(int)(Math.floor((double)columns/2)))*squareSize));
+                }else{ //SECOND QUARTER
+                    System.out.println("Es impar");
+                    manaDots[0][i] =
+                            new Square((int)(randomPosX(columns-1,
+                                    (int)(Math.floor((double)columns/2)))*squareSize),
+                            (int)(randomPosY((int)(Math.floor((double)columns/2)),1)*squareSize));
+                    manaDots[1][i] =
+                            new Square((int)(randomPosX(columns-1,
+                                    (int)(Math.floor((double)columns/2)))*squareSize),
+                            (int)(randomPosY(columns-1,(int)(Math.floor((double)columns/2)))*squareSize));
+                }
+            }
+            else{
+                System.out.println("Es mayor a "+dotsQuantity/2);
+                if((i+1) % 2 == 0){ //THIRD QUARTER
+                    System.out.println("Es par");
+                    manaDots[0][i] =
+                            new Square((int)(randomPosX((int)(Math.floor((double)columns/2)),0)*squareSize),
+                            (int)(randomPosY((int)(Math.floor((double)columns/2)),1)*squareSize));
+                    manaDots[1][i] =
+                            new Square((int)(randomPosX((int)(Math.floor((double)columns/2)),0)*squareSize),
+                            (int)(randomPosY(columns-1,(int)(Math.floor((double)columns/2)))*squareSize));
+                }else{ //FOURTH QUARTER
+                    System.out.println("Es impar");
+                    manaDots[0][i] =
+                            new Square((int)(randomPosX(columns-1,
+                                    (int)(Math.floor((double)columns/2)))*squareSize),
+                            (int)(randomPosY((int)(Math.floor((double)columns/2)),1)*squareSize));
+                    manaDots[1][i] =
+                            new Square((int)(randomPosX(columns-1,
+                                    (int)(Math.floor((double)columns/2)))*squareSize),
+                            (int)(randomPosY(columns-1,(int)(Math.floor((double)columns/2)))*squareSize));
+                }
+            }
+        }
+        posX.clear();
+        posY.clear();
+        return manaDots;
+    }
+
+    private static Integer randomPosX(Integer top, Integer bottom){
+        Integer result = randomPos(bottom, top);
+        if(posX.contains(result)) randomPosX(top, bottom);
+        else posX.add(result);
+        return result;
+    }
+
+    private static Integer randomPosY(Integer top, Integer bottom){
+        Integer result = randomPos(bottom, top);
+        if(posY.contains(result)) randomPosY(top, bottom);
+        else posY.add(result);
+        return result;
+    }
+
+    private static Integer randomPos(Integer floor, Integer ceil){
+        return (int)Math.floor(Math.random()*(ceil-floor+1)+floor);
     }
 
 }
