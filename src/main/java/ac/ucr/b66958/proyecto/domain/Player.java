@@ -8,11 +8,13 @@ public class Player {
     private String name;
     private Map<Integer, Dot> dots;
     private int dotsLost;
+    private int manaPoints;
 
     public Player(String name) {
         this.name = name;
         this.dots = new HashMap<>();
         this.dotsLost = 0;
+        this.manaPoints = 0;
     }
 
     public Player() {
@@ -44,6 +46,18 @@ public class Player {
 
     public void setDotsLost(int dotsLost) {
         this.dotsLost = dotsLost;
+    }
+
+    public int getManaPoints() {
+        return manaPoints;
+    }
+
+    public void addManaPoint(){
+        this.manaPoints++;
+    }
+
+    public void setManaPoints(int manaPoints) {
+        this.manaPoints = manaPoints;
     }
 
     public void newDotLost(){

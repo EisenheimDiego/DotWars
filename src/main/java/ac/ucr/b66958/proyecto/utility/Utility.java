@@ -168,52 +168,44 @@ public class Utility {
     public static Square[][] initMana(int columns, int dotsQuantity){
         Square[][] manaDots = new Square[2][dotsQuantity];
 
-        System.out.println("Vamos a crear: "+dotsQuantity+" dots de mana");
-        System.out.println("En: "+columns+" columnas x filas");
-
         for (int i = 0; i < dotsQuantity; i++) {
             System.out.println(i+1);
             if(i+1 <= (dotsQuantity/2)){
-                System.out.println("Es menor a "+dotsQuantity/2);
                 if((i+1) % 2 == 0){ //FIRST QUARTER
-                    System.out.println("Es par");
                     manaDots[0][i] =
-                            new Square((int)(randomPosX((int)(Math.floor((double)columns/2)),0)*squareSize),
-                            (int)(randomPosY((int)(Math.floor((double)columns/2)),1)*squareSize));
-                    manaDots[1][i] = new Square((int)(randomPosX((columns/2),0)*squareSize),
-                            (int)(randomPosY(columns-1,(int)(Math.floor((double)columns/2)))*squareSize));
+                            new Square((int)(randomPosX(columns/2,0)*squareSize),
+                            (int)(randomPosY(columns/2,1)*squareSize));
+                    manaDots[1][i] = new Square((int)(randomPosX(columns/2,0)*squareSize),
+                            (int)(randomPosY(columns-1,columns/2)*squareSize));
                 }else{ //SECOND QUARTER
                     System.out.println("Es impar");
                     manaDots[0][i] =
                             new Square((int)(randomPosX(columns-1,
-                                    (int)(Math.floor((double)columns/2)))*squareSize),
-                            (int)(randomPosY((int)(Math.floor((double)columns/2)),1)*squareSize));
+                                    columns/2)*squareSize),
+                            (int)(randomPosY(columns/2,1)*squareSize));
                     manaDots[1][i] =
                             new Square((int)(randomPosX(columns-1,
-                                    (int)(Math.floor((double)columns/2)))*squareSize),
-                            (int)(randomPosY(columns-1,(int)(Math.floor((double)columns/2)))*squareSize));
+                                    columns/2)*squareSize),
+                            (int)(randomPosY(columns-1,columns/2)*squareSize));
                 }
             }
             else{
-                System.out.println("Es mayor a "+dotsQuantity/2);
                 if((i+1) % 2 == 0){ //THIRD QUARTER
-                    System.out.println("Es par");
                     manaDots[0][i] =
-                            new Square((int)(randomPosX((int)(Math.floor((double)columns/2)),0)*squareSize),
-                            (int)(randomPosY((int)(Math.floor((double)columns/2)),1)*squareSize));
+                            new Square((int)(randomPosX(columns/2,0)*squareSize),
+                            (int)(randomPosY(columns/2,1)*squareSize));
                     manaDots[1][i] =
-                            new Square((int)(randomPosX((int)(Math.floor((double)columns/2)),0)*squareSize),
-                            (int)(randomPosY(columns-1,(int)(Math.floor((double)columns/2)))*squareSize));
+                            new Square((int)(randomPosX(columns/2,0)*squareSize),
+                            (int)(randomPosY(columns-1,columns/2)*squareSize));
                 }else{ //FOURTH QUARTER
-                    System.out.println("Es impar");
                     manaDots[0][i] =
                             new Square((int)(randomPosX(columns-1,
-                                    (int)(Math.floor((double)columns/2)))*squareSize),
-                            (int)(randomPosY((int)(Math.floor((double)columns/2)),1)*squareSize));
+                                    columns/2)*squareSize),
+                            (int)(randomPosY(columns/2,1)*squareSize));
                     manaDots[1][i] =
                             new Square((int)(randomPosX(columns-1,
-                                    (int)(Math.floor((double)columns/2)))*squareSize),
-                            (int)(randomPosY(columns-1,(int)(Math.floor((double)columns/2)))*squareSize));
+                                    columns/2)*squareSize),
+                            (int)(randomPosY(columns-1,columns/2)*squareSize));
                 }
             }
         }

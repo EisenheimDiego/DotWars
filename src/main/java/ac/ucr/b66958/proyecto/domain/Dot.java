@@ -39,6 +39,10 @@ public class Dot {
         this.life = life;
     }
 
+    public void loseLife(Integer hit){
+        this.life -= hit;
+    }
+
     public Integer getStrength() {
         return strength;
     }
@@ -69,6 +73,22 @@ public class Dot {
 
     public void setX(Integer x) {
         this.x = x;
+    }
+
+    public void movePositiveX(int step){
+        this.x+=step;
+    }
+
+    public void moveNegativeX(int step){
+        this.x-=step;
+    }
+
+    public void movePositiveY(int step){
+        this.y+=step;
+    }
+
+    public void moveNegativeY(int step){
+        this.y-=step;
     }
 
     public Integer getY() {

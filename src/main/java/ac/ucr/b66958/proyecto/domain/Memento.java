@@ -5,15 +5,25 @@ public class Memento {
     private int n;
     private double squareSize;
     private Player p1, p2;
+    private Square[][] mana;
 
-    public Memento(int n, double squareSize, Player p1, Player p2) {
+    public Memento(int n, double squareSize, Player p1, Player p2, Square[][] mana) {
         this.n = n;
         this.squareSize = squareSize;
         this.p1 = p1;
         this.p2 = p2;
+        this.mana = mana;
     }
 
     public Memento() {
+    }
+
+    public Square[][] getMana() {
+        return mana;
+    }
+
+    public void setMana(Square[][] mana) {
+        this.mana = mana;
     }
 
     public int getN() {

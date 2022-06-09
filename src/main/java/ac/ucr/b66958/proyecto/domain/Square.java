@@ -10,6 +10,9 @@ public class Square {
         this.y = y;
     }
 
+    public Square() {
+    }
+
     public Integer getX() {
         return x;
     }
@@ -24,5 +27,10 @@ public class Square {
 
     public void setY(Integer y) {
         this.y = y;
+    }
+
+    @Override
+    public String toString() {
+        return "x: " + x + ", y: " + y;
     }
 }

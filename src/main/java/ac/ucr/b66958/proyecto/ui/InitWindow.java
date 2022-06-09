@@ -21,8 +21,11 @@ import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Stream;
 
 public class InitWindow extends Pane {
     private final Canvas canvas;
@@ -242,6 +245,7 @@ public class InitWindow extends Pane {
         messageInfo("Choose your action: 1/2");
         step = 0;
         updateDotsList();
+        checkManaPositions(turn);
     }
 
     private void moveKey(KeyEvent event) {
@@ -271,7 +275,7 @@ public class InitWindow extends Pane {
         Dot newDot;
         switch (direction) {
             case 1:
-                dot.setX(dot.getX() + (int) Utility.squareSize);
+                dot.movePositiveX((int)Utility.squareSize);
                 dot.setId(dotPosition + 1);
                 newDot = p.getDots().get(dotPosition);
                 newDot.setId(dotPosition + 1);
@@ -280,7 +284,7 @@ public class InitWindow extends Pane {
                 dotPosition++;
                 break;
             case 2:
-                dot.setX(dot.getX() - (int) Utility.squareSize);
+                dot.moveNegativeX((int)Utility.squareSize);
                 dot.setId(dotPosition - 1);
                 newDot = p.getDots().get(dotPosition);
                 newDot.setId(dotPosition - 1);
@@ -289,10 +293,10 @@ public class InitWindow extends Pane {
                 dotPosition--;
                 break;
             case 3:
-                dot.setY(dot.getY() + (int) Utility.squareSize);
+                dot.movePositiveY((int)Utility.squareSize);
                 break;
             case 4:
-                dot.setY(dot.getY() - (int) Utility.squareSize);
+                dot.moveNegativeY((int)Utility.squareSize);
                 break;
         }
     }
@@ -379,6 +383,7 @@ public class InitWindow extends Pane {
         clearBoard();
         drawBoard();
         drawDots();
+        drawManaDots();
     }
 
     private void clearBoard(){
@@ -395,6 +400,7 @@ public class InitWindow extends Pane {
         obtainMementoData(memento);
         clearBoard();
         drawBoard();
+        drawManaDots();
         if(flag) assignDots();
         else drawDots();
         assignTurn();
@@ -412,6 +418,7 @@ public class InitWindow extends Pane {
         turn = p2;
         this.player1Name.setText(p1.getName());
         this.player2Name.setText(p2.getName());
+        manaDots = memento.getMana();
     }
 
     private void beginBoard() {
@@ -430,11 +437,12 @@ public class InitWindow extends Pane {
                     turn = p2;
                     squares = Utility.initSquares(n);
                     drawBoard();
-                    this.memento = new Memento(n, Utility.squareSize,
-                            new Player(player1Name.getText()), new Player(player2Name.getText()));
                     assignDots();
                     initialDots = p1.getDots().size();
+                    manaDots = Utility.initMana(squares[0].length, this.initialDots);
                     drawManaDots();
+                    this.memento = new Memento(n, Utility.squareSize,
+                            new Player(player1Name.getText()), new Player(player2Name.getText()), this.manaDots);
                     assignTurn();
                     disableInitButtons();
                     enablePlayButtons();
@@ -555,14 +563,10 @@ public class InitWindow extends Pane {
 
     private void attack() {
         if(turn == p1){
-            p2.getDots().get(enemy.getId())
-                    .setLife(p2.getDots().get(enemy.getId()).getLife()
-                    -chosen.getStrength());
+            p2.getDots().get(enemy.getId()).loseLife(chosen.getStrength());
             deadDots(p2);
         }else{
-            p1.getDots().get(enemy.getId())
-                    .setLife(p1.getDots().get(enemy.getId()).getLife()
-                            -chosen.getStrength());
+            p1.getDots().get(enemy.getId()).loseLife(chosen.getStrength());
             deadDots(p1);
         }
         repaint();
@@ -625,7 +629,6 @@ public class InitWindow extends Pane {
     }
 
     private void drawManaDots(){
-        manaDots = Utility.initMana(squares[0].length, this.initialDots);
         for (int i = 0; i < 2; i++) {
             for (int j = 0; j < manaDots[0].length; j++) {
                 g.drawImage(new Image(Utility.mana), manaDots[i][j].getX(), manaDots[i][j].getY()
@@ -676,7 +679,7 @@ public class InitWindow extends Pane {
     }
 
     private void saveGame() {
-        this.gameService.saveGame(new Memento(squares[0].length, Utility.squareSize, p1, p2));
+        this.gameService.saveGame(new Memento(squares[0].length, Utility.squareSize, p1, p2, manaDots));
     }
 
     private void quitGame() {
@@ -712,6 +715,40 @@ public class InitWindow extends Pane {
         }
     }
 
+    private void checkManaPoints(){
+        if(turn.getName().equals(p1.getName()))
+            checkManaPositions(p1);
+        else checkManaPositions(p2);
+    }
+
+    private void checkManaPositions(Player p){
+        boolean matchX;
+        boolean matchY;
+        Arrays.stream(manaDots[0]).forEach(s -> System.out.println(s.toString()));
+        Arrays.stream(manaDots[1]).forEach(s -> System.out.println(s.toString()));
+        for (Map.Entry<Integer, Dot> integerDotEntry : p.getDots().entrySet()) {
+            Dot temp = integerDotEntry.getValue();
+            Stream<Square> squaresStream = Arrays.stream(manaDots[0]);
+            matchX = squaresStream.anyMatch(value -> (Objects.equals(value.getX(), temp.getX())));
+            squaresStream = Arrays.stream(manaDots[0]);
+            matchY = squaresStream.anyMatch(value -> (Objects.equals(value.getY(), temp.getY())));
+            if(!matchX){
+                squaresStream = Arrays.stream(manaDots[1]);
+                matchX = squaresStream.anyMatch(value -> (Objects.equals(value.getX(), temp.getX())));
+            }
+            if(!matchY){
+                squaresStream = Arrays.stream(manaDots[1]);
+                matchY = squaresStream.anyMatch(value -> (Objects.equals(value.getY(), temp.getY())));
+            }
+            if (matchX && matchY) {
+                p.addManaPoint();
+                matchX = false;
+                matchY = false;
+            }
+        }
+        System.out.println("Player "+p.getName()+" has "+p.getManaPoints());
+    }
+
     private void disableInitButtons() {
         this.defaultDimensions.setDisable(true);
         this.begin.setDisable(true);
@@ -733,7 +770,6 @@ public class InitWindow extends Pane {
         this.quit.setDisable(true);
         this.restart.setDisable(true);
         this.save.setDisable(true);
-        this.load.setDisable(true);
         this.move.setDisable(true);
         this.pass.setDisable(true);
         this.attack.setDisable(true);
@@ -743,7 +779,6 @@ public class InitWindow extends Pane {
         this.quit.setDisable(false);
         this.restart.setDisable(false);
         this.save.setDisable(false);
-        this.load.setDisable(false);
         this.move.setDisable(false);
         this.pass.setDisable(false);
         this.attack.setDisable(false);
