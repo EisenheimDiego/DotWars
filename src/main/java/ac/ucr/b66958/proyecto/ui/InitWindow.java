@@ -39,14 +39,16 @@ public class InitWindow extends Pane {
     private Label player1, player2;
     private TextField player1Name, player2Name;
 
-    private HBox menu;
+    private HBox menu, menuMana;
 
     private Button quit, restart;
     private Button save, load;
 
     private Button move, pass, attack;
 
-    private Label showTurn, showMessage, dotsLost;
+    private Button lifeMana, strengthMana, hitMana, stepMana;
+
+    private Label showTurn, showMessage, dotsLost, manaInfo;
 
     private ComboBox<String> defaultDimensions;
 
@@ -82,10 +84,12 @@ public class InitWindow extends Pane {
 
         this.getChildren().addAll(this.canvas, this.logo, this.size, this.sizeText, this.begin,
                 this.player1, this.player2, this.player1Name, this.player2Name, this.showTurn,
-                this.defaultDimensions, this.menu, this.dotsListView, this.dotsLost);
+                this.defaultDimensions, this.menu, this.menuMana, this.dotsListView, this.dotsLost);
 
         this.menu.getChildren().addAll(this.quit, this.save, this.load, this.restart, this.move, this.pass,
                 this.attack, this.showMessage);
+
+        this.menuMana.getChildren().addAll(this.lifeMana, this.strengthMana, this.hitMana, this.stepMana,this.manaInfo);
 
         events();
         drawBorderedBoard();
@@ -107,6 +111,14 @@ public class InitWindow extends Pane {
         this.dotsLost = new Label("");
         this.dotsLost.setVisible(false);
 
+        this.lifeMana = new Button("+ Life");
+        this.strengthMana = new Button("+ Strength");
+        this.hitMana = new Button("+ Hit Distance");
+        this.stepMana = new Button("+ Step Distance");
+
+        this.manaInfo = new Label("");
+        this.manaInfo.setStyle("-fx-text-fill: #ffffff");
+
         this.player1 = new Label("Player 1:");
         this.player1Name = new TextField();
 
@@ -122,6 +134,13 @@ public class InitWindow extends Pane {
         this.menu.setStyle("-fx-background-color: #0c0d2b");
         this.menu.setPadding(new Insets(10));
         this.menu.setSpacing(10);
+
+        this.menuMana = new HBox();
+        this.menuMana.setPrefHeight(50);
+        this.menuMana.setPrefWidth(600);
+        this.menuMana.setStyle("-fx-background-color: #0c0d2b");
+        this.menuMana.setPadding(new Insets(10));
+        this.menuMana.setSpacing(10);
 
         this.quit = new Button("Quit");
         this.quit.setStyle("-fx-background-color: #ff0000; -fx-text-fill: #ffffff");
@@ -145,7 +164,7 @@ public class InitWindow extends Pane {
 
         this.dotsView = FXCollections.observableArrayList();
         this.dotsListView = new ListView<>(dotsView);
-        this.dotsListView.setPrefSize(500, 200);
+        this.dotsListView.setPrefSize(600, 200);
 
         disablePlayButtons();
     }
@@ -193,6 +212,9 @@ public class InitWindow extends Pane {
 
         this.dotsListView.setLayoutX(720);
         this.dotsListView.setLayoutY(170);
+
+        this.menuMana.setLayoutX(720);
+        this.menuMana.setLayoutY(370);
     }
 
     private void initAttributes(){
@@ -241,6 +263,10 @@ public class InitWindow extends Pane {
         this.dotsLost.setText("Dots lost: "+turn.getDotsLost());
         if (!dotsLost.isVisible())
             this.dotsLost.setVisible(true);
+
+        this.manaInfo.setText("Mana points: "+turn.getManaPoints());
+        if (!manaInfo.isVisible())
+            this.manaInfo.setVisible(true);
 
         messageInfo("Choose your action: 1/2");
         step = 0;
@@ -319,7 +345,14 @@ public class InitWindow extends Pane {
         this.showMessage.setText(message);
     }
 
+    private void messageManaInfo(String message){
+        if(!this.manaInfo.isVisible())
+            this.manaInfo.setVisible(true);
+        this.manaInfo.setText(message);
+    }
+
     private void action(int action) {
+        messageManaInfo("Mana points: "+turn.getManaPoints());
         if (action == 1) {
             attMov = 1;
             chosen = null;
@@ -715,38 +748,24 @@ public class InitWindow extends Pane {
         }
     }
 
-    private void checkManaPoints(){
-        if(turn.getName().equals(p1.getName()))
-            checkManaPositions(p1);
-        else checkManaPositions(p2);
-    }
-
     private void checkManaPositions(Player p){
-        boolean matchX;
-        boolean matchY;
-        Arrays.stream(manaDots[0]).forEach(s -> System.out.println(s.toString()));
-        Arrays.stream(manaDots[1]).forEach(s -> System.out.println(s.toString()));
+        boolean match;
         for (Map.Entry<Integer, Dot> integerDotEntry : p.getDots().entrySet()) {
             Dot temp = integerDotEntry.getValue();
             Stream<Square> squaresStream = Arrays.stream(manaDots[0]);
-            matchX = squaresStream.anyMatch(value -> (Objects.equals(value.getX(), temp.getX())));
-            squaresStream = Arrays.stream(manaDots[0]);
-            matchY = squaresStream.anyMatch(value -> (Objects.equals(value.getY(), temp.getY())));
-            if(!matchX){
+            match = squaresStream.anyMatch(value ->
+                    (Objects.equals(value.getX(), temp.getX()) && Objects.equals(value.getY(), temp.getY())));
+            if(!match){
                 squaresStream = Arrays.stream(manaDots[1]);
-                matchX = squaresStream.anyMatch(value -> (Objects.equals(value.getX(), temp.getX())));
+                match = squaresStream.anyMatch(value ->
+                        (Objects.equals(value.getX(), temp.getX()) && Objects.equals(value.getY(), temp.getY())));
             }
-            if(!matchY){
-                squaresStream = Arrays.stream(manaDots[1]);
-                matchY = squaresStream.anyMatch(value -> (Objects.equals(value.getY(), temp.getY())));
-            }
-            if (matchX && matchY) {
+            if (match) {
                 p.addManaPoint();
-                matchX = false;
-                matchY = false;
+                temp.addManaPoint();
+                match = false;
             }
         }
-        System.out.println("Player "+p.getName()+" has "+p.getManaPoints());
     }
 
     private void disableInitButtons() {
@@ -773,6 +792,10 @@ public class InitWindow extends Pane {
         this.move.setDisable(true);
         this.pass.setDisable(true);
         this.attack.setDisable(true);
+        this.lifeMana.setDisable(true);
+        this.hitMana.setDisable(true);
+        this.strengthMana.setDisable(true);
+        this.stepMana.setDisable(true);
     }
 
     private void enablePlayButtons() {
@@ -782,5 +805,9 @@ public class InitWindow extends Pane {
         this.move.setDisable(false);
         this.pass.setDisable(false);
         this.attack.setDisable(false);
+        this.lifeMana.setDisable(false);
+        this.hitMana.setDisable(false);
+        this.strengthMana.setDisable(false);
+        this.stepMana.setDisable(false);
     }
 }

@@ -169,7 +169,6 @@ public class Utility {
         Square[][] manaDots = new Square[2][dotsQuantity];
 
         for (int i = 0; i < dotsQuantity; i++) {
-            System.out.println(i+1);
             if(i+1 <= (dotsQuantity/2)){
                 if((i+1) % 2 == 0){ //FIRST QUARTER
                     manaDots[0][i] =
@@ -178,7 +177,6 @@ public class Utility {
                     manaDots[1][i] = new Square((int)(randomPosX(columns/2,0)*squareSize),
                             (int)(randomPosY(columns-1,columns/2)*squareSize));
                 }else{ //SECOND QUARTER
-                    System.out.println("Es impar");
                     manaDots[0][i] =
                             new Square((int)(randomPosX(columns-1,
                                     columns/2)*squareSize),

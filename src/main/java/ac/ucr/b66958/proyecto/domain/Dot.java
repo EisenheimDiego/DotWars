@@ -9,6 +9,7 @@ public class Dot {
     private Integer x;
     private Integer y;
     private Integer id;
+    private Integer manaPoints;
 
     public Dot() {
     }
@@ -21,6 +22,7 @@ public class Dot {
         this.strength = 1;
         this.hitDistance = 3;
         this.stepDistance = 3;
+        this.manaPoints = 0;
     }
 
     public Integer getId() {
@@ -41,6 +43,26 @@ public class Dot {
 
     public void loseLife(Integer hit){
         this.life -= hit;
+    }
+
+    public void gainLife(Integer lifeGain){
+        this.life += lifeGain;
+        this.manaPoints-= lifeGain;
+    }
+
+    public void gainStrength(Integer strengthGain){
+        this.strength += strengthGain;
+        this.manaPoints-= strengthGain;
+    }
+
+    public void gainHitDistance(Integer hitDistanceGain){
+        this.hitDistance += hitDistanceGain;
+        this.manaPoints-= hitDistanceGain;
+    }
+
+    public void gainStepDistance(Integer stepDistanceGain){
+        this.stepDistance += stepDistanceGain;
+        this.manaPoints-= stepDistanceGain;
     }
 
     public Integer getStrength() {
@@ -83,14 +105,6 @@ public class Dot {
         this.x-=step;
     }
 
-    public void movePositiveY(int step){
-        this.y+=step;
-    }
-
-    public void moveNegativeY(int step){
-        this.y-=step;
-    }
-
     public Integer getY() {
         return y;
     }
@@ -99,10 +113,34 @@ public class Dot {
         this.y = y;
     }
 
+    public void movePositiveY(int step){
+        this.y+=step;
+    }
+
+    public void moveNegativeY(int step){
+        this.y-=step;
+    }
+
+    public Integer getManaPoints() {
+        return manaPoints;
+    }
+
+    public void setManaPoints(Integer manaPoints) {
+        this.manaPoints = manaPoints;
+    }
+
+    public void addManaPoint(){
+        this.manaPoints++;
+    }
+
+    public void takeManaPoints(Integer amount){
+        this.manaPoints -= amount;
+    }
+
     @Override
     public String toString() {
         return "Dot at X: "+x+", Y: "+y+" | Life: "+life+
                 " | Strength: "+strength+" | Hit Distance: "+hitDistance+
-                " | Step Distance: "+stepDistance;
+                " | Step Distance: "+stepDistance+" | Mana Points: "+manaPoints;
     }
 }
