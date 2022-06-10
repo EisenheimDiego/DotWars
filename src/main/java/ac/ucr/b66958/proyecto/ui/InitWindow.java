@@ -79,7 +79,7 @@ public class InitWindow extends Pane {
         this.menu.getChildren().addAll(this.quit, this.save, this.load, this.restart, this.move, this.pass,
                 this.attack, this.showMessage);
 
-        this.menuMana.getChildren().addAll(this.lifeMana, this.strengthMana, this.hitMana, this.stepMana,this.manaInfo);
+        this.menuMana.getChildren().addAll(this.lifeMana, this.strengthMana, this.hitMana, this.stepMana, this.manaInfo);
 
         events();
         drawBorderedBoard();
@@ -207,7 +207,7 @@ public class InitWindow extends Pane {
         this.menuMana.setLayoutY(370);
     }
 
-    private void initAttributes(){
+    private void initAttributes() {
         this.dotPosition = -1;
         this.attMov = 0;
         this.chosen = null;
@@ -234,12 +234,12 @@ public class InitWindow extends Pane {
         this.stepMana.setOnAction(actionEvent -> newManaAction(4));
     }
 
-    private void newAction(){
+    private void newAction() {
         movements++;
-        if(movements == 1){
+        if (movements == 1) {
             messageInfo("Choose your action: 2/2");
             initAttributes();
-        }else if(movements == 2){
+        } else if (movements == 2) {
             movements = 0;
             assignTurn();
         }
@@ -254,7 +254,7 @@ public class InitWindow extends Pane {
         if (!showTurn.isVisible())
             this.showTurn.setVisible(true);
 
-        this.dotsLost.setText("Dots lost: "+turn.getDotsLost());
+        this.dotsLost.setText("Dots lost: " + turn.getDotsLost());
 
         this.manaInfo.setText("");
 
@@ -291,7 +291,7 @@ public class InitWindow extends Pane {
         Dot newDot;
         switch (direction) {
             case 1:
-                dot.movePositiveX((int)Utility.squareSize);
+                dot.movePositiveX((int) Utility.squareSize);
                 dot.setId(dotPosition + 1);
                 newDot = p.getDots().get(dotPosition);
                 newDot.setId(dotPosition + 1);
@@ -300,7 +300,7 @@ public class InitWindow extends Pane {
                 dotPosition++;
                 break;
             case 2:
-                dot.moveNegativeX((int)Utility.squareSize);
+                dot.moveNegativeX((int) Utility.squareSize);
                 dot.setId(dotPosition - 1);
                 newDot = p.getDots().get(dotPosition);
                 newDot.setId(dotPosition - 1);
@@ -309,15 +309,15 @@ public class InitWindow extends Pane {
                 dotPosition--;
                 break;
             case 3:
-                dot.movePositiveY((int)Utility.squareSize);
+                dot.movePositiveY((int) Utility.squareSize);
                 break;
             case 4:
-                dot.moveNegativeY((int)Utility.squareSize);
+                dot.moveNegativeY((int) Utility.squareSize);
                 break;
         }
     }
 
-    private void infoUnlockBoard(int info){
+    private void infoUnlockBoard(int info) {
         disablePlayButtons();
         if (info == 1) {
             messageInfo("Choose a dot and move it");
@@ -329,20 +329,20 @@ public class InitWindow extends Pane {
         }
     }
 
-    private void messageInfo(String message){
-        if(!this.showMessage.isVisible())
+    private void messageInfo(String message) {
+        if (!this.showMessage.isVisible())
             this.showMessage.setVisible(true);
         this.showMessage.setText(message);
     }
 
-    private void messageManaInfo(String message){
-        if(!this.manaInfo.isVisible())
+    private void messageManaInfo(String message) {
+        if (!this.manaInfo.isVisible())
             this.manaInfo.setVisible(true);
         this.manaInfo.setText(message);
     }
 
     private void action(int action) {
-        messageManaInfo("Mana points: "+turn.getManaPoints());
+        messageManaInfo("Mana points: " + turn.getManaPoints());
         if (action == 1) {
             attMov = 1;
             chosen = null;
@@ -353,7 +353,7 @@ public class InitWindow extends Pane {
             chosen = null;
             step = 0;
         }
-        if(action == 3){
+        if (action == 3) {
             choosingEnemy = true;
             this.showMessage.setText("Choose your enemy");
         }
@@ -373,15 +373,15 @@ public class InitWindow extends Pane {
         if (flag) dotMoved();
     }
 
-    private void dotMoved(){
+    private void dotMoved() {
         repaint();
         step++;
         if (step == chosen.getStepDistance()) {
             attMov = 0;
             enablePlayButtons();
             newAction();
-        }else
-        messageInfo(chosen.getStepDistance() - step + " movements left");
+        } else
+            messageInfo(chosen.getStepDistance() - step + " movements left");
     }
 
     private boolean validateMovement(int direction, Player p) {
@@ -409,7 +409,7 @@ public class InitWindow extends Pane {
         drawManaDots();
     }
 
-    private void clearBoard(){
+    private void clearBoard() {
         g.setFill(Color.LIGHTGRAY);
         g.clearRect(0, 10, 700, 700);
     }
@@ -419,21 +419,21 @@ public class InitWindow extends Pane {
         this.dotsView.addAll(this.turn.getDots().values());
     }
 
-    private void restartGame(Memento memento, boolean flag){
+    private void restartGame(Memento memento, boolean flag) {
         obtainMementoData(memento);
         clearBoard();
         drawBoard();
         drawManaDots();
-        if(flag) assignDots();
+        if (flag) assignDots();
         else drawDots();
         assignTurn();
         disableInitButtons();
         enablePlayButtons();
-        if(flag) Utility.showMessage("Game restarted", 2);
+        if (flag) Utility.showMessage("Game restarted", 2);
         else Utility.showMessage("Game loaded", 2);
     }
 
-    private void obtainMementoData(Memento memento){
+    private void obtainMementoData(Memento memento) {
         int nMem = memento.getN();
         squares = Utility.initSquares(nMem);
         p1 = memento.getP1();
@@ -482,17 +482,17 @@ public class InitWindow extends Pane {
         if (event.getX() > 700 || event.getY() > 700 || squares == null) {
             return;
         }
-        if(attMov == 0){
-            return ;
+        if (attMov == 0) {
+            return;
         }
-        if(choosingEnemy){
+        if (choosingEnemy) {
             enemyClicked(event);
-        }else{
+        } else {
             dotClicked(event);
         }
     }
 
-    private void dotClicked(MouseEvent event){
+    private void dotClicked(MouseEvent event) {
         int x = -1;
         int y = -1;
         int pos = -1;
@@ -535,24 +535,23 @@ public class InitWindow extends Pane {
         actionFinished(x, y, pos);
     }
 
-    private void actionFinished(int x, int y, int pos){
-        if(this.chosen != null){
-            if(attMov == 2){
-                if(dotAtMana(chosen)){
-                    Utility.showMessage("Can't attack. Move your dot!",1);
+    private void actionFinished(int x, int y, int pos) {
+        if (this.chosen != null) {
+            if (attMov == 2) {
+                if (dotAtMana(chosen)) {
+                    Utility.showMessage("Can't attack. Move your dot!", 1);
                     enablePlayButtons();
-                    if(movements == 0){
+                    if (movements == 0) {
                         messageInfo("Choose your action: 1/2");
-                    }else if(movements == 1){
+                    } else if (movements == 1) {
                         messageInfo("Choose your action: 2/2");
                     }
                     initAttributes();
-                }
-                else{
+                } else {
                     g.strokeRect(x, y, Utility.squareSize, Utility.squareSize);
                     action(3);
                 }
-            }else{
+            } else {
                 this.dotPosition = pos;
                 g.strokeRect(x, y, Utility.squareSize, Utility.squareSize);
                 checkManaDistribution();
@@ -560,27 +559,35 @@ public class InitWindow extends Pane {
         }
     }
 
-    private void checkManaDistribution(){
-        if(manaAction == 0) return ;
-        switch (manaAction){
-            case 1:
-                System.out.println("Life");
-                break;
-            case 2:
-                System.out.println("Strength");
-                break;
-            case 3:
-                System.out.println("Hit");
-                break;
-            case 4:
-                System.out.println("Step");
-                break;
+    private void checkManaDistribution() {
+        if (manaAction == 0) return;
+        if (checkManaPoints(manaAction)) {
+            switch (manaAction) {
+                case 1:
+                    System.out.println("Life");
+                    break;
+                case 2:
+                    System.out.println("Strength");
+                    break;
+                case 3:
+                    System.out.println("Hit");
+                    break;
+                case 4:
+                    System.out.println("Step");
+                    break;
+            }
+        } else {
+            Utility.showMessage("You don't have mana points", 1);
         }
         manaAction = 0;
-
+        attMov = 0;
+        chosen = null;
+        repaint();
+        enablePlayButtons();
+        messageManaInfo("");
     }
 
-    private void newManaAction(int action){
+    private void newManaAction(int action) {
         manaAction = action;
         messageManaInfo("Choose a mana receiver dot");
         disablePlayButtons();
@@ -588,7 +595,21 @@ public class InitWindow extends Pane {
         chosen = null;
     }
 
-    private void enemyClicked(MouseEvent event){
+    private boolean checkManaPoints(int action) {
+        if (chosen.getManaPoints() < 1) return false;
+        switch (action) {
+            case 2:
+            case 4:
+                if (chosen.getManaPoints() < 2) return false;
+                break;
+            case 3:
+                if (chosen.getManaPoints() < 3) return false;
+                break;
+        }
+        return true;
+    }
+
+    private void enemyClicked(MouseEvent event) {
         g.setStroke(Color.WHITE);
         first:
         for (int i = 0; i < squares[0].length; i++) {
@@ -621,19 +642,19 @@ public class InitWindow extends Pane {
                 }
             }
         }
-        if(this.enemy != null){
+        if (this.enemy != null) {
             boolean attackPossible = Utility.attackDot(chosen, enemy);
             infoAttack(attackPossible);
             choosingEnemy = false;
         }
     }
 
-    private void infoAttack(boolean result){
-        if(result){
+    private void infoAttack(boolean result) {
+        if (result) {
             Utility.showMessage("You've attacked", 2);
             attack();
             step++;
-        }else{
+        } else {
             Utility.showMessage("You're enemy is too far", 1);
             newAction();
         }
@@ -644,14 +665,14 @@ public class InitWindow extends Pane {
     }
 
     private void attack() {
-        if(turn == p1){
+        if (turn == p1) {
             p2.getDots().get(enemy.getId()).loseLife(chosen.getStrength());
-            if(deadDots(p2)){
+            if (deadDots(p2)) {
                 chosen.addManaPoint();
             }
-        }else{
+        } else {
             p1.getDots().get(enemy.getId()).loseLife(chosen.getStrength());
-            if(deadDots(p1)){
+            if (deadDots(p1)) {
                 chosen.addManaPoint();
             }
         }
@@ -660,16 +681,16 @@ public class InitWindow extends Pane {
         checkLoser();
     }
 
-    private boolean deadDots(Player toCheck){
+    private boolean deadDots(Player toCheck) {
         Iterator<Map.Entry<Integer, Dot>> dots = toCheck.getDots().entrySet().iterator();
         int posDead = -1;
-        while(dots.hasNext()){
+        while (dots.hasNext()) {
             Dot temp = dots.next().getValue();
-            if(temp.getLife() <= 0){
+            if (temp.getLife() <= 0) {
                 posDead = temp.getId();
             }
         }
-        if(posDead > -1){
+        if (posDead > -1) {
             toCheck.getDots().remove(posDead);
             toCheck.newDotLost();
             return true;
@@ -716,11 +737,11 @@ public class InitWindow extends Pane {
         drawDots();
     }
 
-    private void drawManaDots(){
+    private void drawManaDots() {
         for (int i = 0; i < 2; i++) {
             for (int j = 0; j < manaDots[0].length; j++) {
                 g.drawImage(new Image(Utility.mana), manaDots[i][j].getX(), manaDots[i][j].getY()
-                , Utility.squareSize, Utility.squareSize);
+                        , Utility.squareSize, Utility.squareSize);
             }
         }
     }
@@ -779,7 +800,7 @@ public class InitWindow extends Pane {
         }
     }
 
-    private void clearGame(){
+    private void clearGame() {
         initAttributes();
         enableInitButtons();
         disablePlayButtons();
@@ -793,17 +814,17 @@ public class InitWindow extends Pane {
         messageInfo("The game was finished");
     }
 
-    private void checkLoser(){
-        if(p1.getDots().size() == 0){
+    private void checkLoser() {
+        if (p1.getDots().size() == 0) {
             turn = p2;
             quitGame();
-        }else if(p2.getDots().size() == 0){
+        } else if (p2.getDots().size() == 0) {
             turn = p1;
             quitGame();
         }
     }
 
-    private void checkManaPositions(Player p){
+    private void checkManaPositions(Player p) {
         boolean match;
         for (Map.Entry<Integer, Dot> integerDotEntry : p.getDots().entrySet()) {
             Dot temp = integerDotEntry.getValue();
@@ -815,12 +836,12 @@ public class InitWindow extends Pane {
         }
     }
 
-    private boolean dotAtMana(Dot dotToCheck){
+    private boolean dotAtMana(Dot dotToCheck) {
         Stream<Square> squaresStream = Arrays.stream(manaDots[0]);
-        if(squaresStream.anyMatch(value ->
-                (Objects.equals(value.getX(), dotToCheck.getX()) && Objects.equals(value.getY(), dotToCheck.getY())))){
+        if (squaresStream.anyMatch(value ->
+                (Objects.equals(value.getX(), dotToCheck.getX()) && Objects.equals(value.getY(), dotToCheck.getY())))) {
             return true;
-        }else{
+        } else {
             squaresStream = Arrays.stream(manaDots[1]);
             return squaresStream.anyMatch(value ->
                     (Objects.equals(value.getX(), dotToCheck.getX()) && Objects.equals(value.getY(), dotToCheck.getY())));
