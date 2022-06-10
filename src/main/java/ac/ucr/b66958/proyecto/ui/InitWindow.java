@@ -564,20 +564,26 @@ public class InitWindow extends Pane {
         if (checkManaPoints(manaAction)) {
             switch (manaAction) {
                 case 1:
-                    System.out.println("Life");
+                    chosen.gainLife();
+                    Utility.showMessage("You've added 1 point to your dot life", 2);
                     break;
                 case 2:
-                    System.out.println("Strength");
+                    chosen.gainStrength();
+                    Utility.showMessage("You've added 1 point to your dot strength", 2);
                     break;
                 case 3:
-                    System.out.println("Hit");
+                    chosen.gainHitDistance();
+                    Utility.showMessage("You've added 1 point to your dot hit distance", 2);
                     break;
                 case 4:
-                    System.out.println("Step");
+                    chosen.gainStepDistance();
+                    Utility.showMessage("You've added 1 point to your dot step distance", 2);
                     break;
             }
+            updateDotsList();
         } else {
-            Utility.showMessage("You don't have mana points", 1);
+            Utility.showMessage("You don't have enough mana points."
+                    + "\n Or your dot is at its maximum allowed", 1);
         }
         manaAction = 0;
         attMov = 0;
@@ -596,14 +602,22 @@ public class InitWindow extends Pane {
     }
 
     private boolean checkManaPoints(int action) {
-        if (chosen.getManaPoints() < 1) return false;
+        if (chosen.getManaPoints() < 1){
+            System.out.println("No tiene puntos");
+            return false;
+        }
         switch (action) {
+            case 1:
+                if (chosen.getLife() == 10) return false;
+                break;
             case 2:
-            case 4:
-                if (chosen.getManaPoints() < 2) return false;
+                if (chosen.getStrength() == 10) return false;
                 break;
             case 3:
                 if (chosen.getManaPoints() < 3) return false;
+                break;
+            case 4:
+                if (chosen.getManaPoints() < 2 || chosen.getStepDistance() == 10) return false;
                 break;
         }
         return true;

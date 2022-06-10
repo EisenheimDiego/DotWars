@@ -45,24 +45,24 @@ public class Dot {
         this.life -= hit;
     }
 
-    public void gainLife(Integer lifeGain){
-        this.life += lifeGain;
-        this.manaPoints-= lifeGain;
+    public void gainLife(){
+        this.life++;
+        this.manaPoints--;
     }
 
-    public void gainStrength(Integer strengthGain){
-        this.strength += strengthGain;
-        this.manaPoints-= strengthGain;
+    public void gainStrength(){
+        this.strength++;
+        this.manaPoints-=2;
     }
 
-    public void gainHitDistance(Integer hitDistanceGain){
-        this.hitDistance += hitDistanceGain;
-        this.manaPoints-= hitDistanceGain;
+    public void gainHitDistance(){
+        this.hitDistance++;
+        this.manaPoints-=3;
     }
 
-    public void gainStepDistance(Integer stepDistanceGain){
-        this.stepDistance += stepDistanceGain;
-        this.manaPoints-= stepDistanceGain;
+    public void gainStepDistance(){
+        this.stepDistance++;
+        this.manaPoints-=2;
     }
 
     public Integer getStrength() {
