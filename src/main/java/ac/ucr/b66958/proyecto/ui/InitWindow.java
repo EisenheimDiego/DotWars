@@ -20,6 +20,7 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
+import javafx.scene.media.MediaPlayer;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
@@ -35,6 +36,7 @@ public class InitWindow extends Pane {
     private GraphicsContext g;
     private ImageView logo;
     private ComboBox<String> defaultDimensions;
+    private static MediaPlayer mediaPlayer;
 
     private Player p1, p2, turn;
     private Dot chosen, enemy;
@@ -421,6 +423,7 @@ public class InitWindow extends Pane {
         assignTurn();
         disableInitButtons();
         enablePlayButtons();
+        playBeginning();
         if (flag) Utility.showMessage("Game restarted", 2);
         else Utility.showMessage("Game loaded", 2);
     }
@@ -434,6 +437,11 @@ public class InitWindow extends Pane {
         this.player1Name.setText(p1.getName());
         this.player2Name.setText(p2.getName());
         manaDots = memento.getMana();
+    }
+
+    private void playBeginning(){
+        GameMediaPlayer.playStart(mediaPlayer);
+        GameMediaPlayer.playAmbiance(mediaPlayer);
     }
 
     private void beginBoard() {
@@ -451,9 +459,8 @@ public class InitWindow extends Pane {
                     p1 = new Player(player1Name.getText());
                     p2 = new Player(player2Name.getText());
                     turn = p2;
-                    GameMediaPlayer.playStart();
-                    GameMediaPlayer.playAmbiance();
                     squares = Utility.initSquares(n);
+                    playBeginning();
                     drawBoard();
                     assignDots();
                     initialDots = p1.getDots().size();
@@ -806,7 +813,7 @@ public class InitWindow extends Pane {
     private void quitGame() {
         clearGame();
         disablePlayButtons();
-        GameMediaPlayer.playEndGame();
+        GameMediaPlayer.playEndGame(mediaPlayer);
         if (turn.getName().equals(p1.getName())) {
             Utility.showMessage(p2.getName() + " has won the game!", 2);
         } else {

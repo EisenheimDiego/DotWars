@@ -167,43 +167,43 @@ public class Utility {
 
     public static Square[][] initMana(int columns, int dotsQuantity){
         Square[][] manaDots = new Square[2][dotsQuantity];
+        int half1 = 0;
+        int half2 = 0;
+        half1 = (columns/2)-1;
+
+        if(columns % 2 != 0){
+            half2 = half1+2;
+        }else{
+            half2 = half1+1;
+        }
 
         for (int i = 0; i < dotsQuantity; i++) {
             if(i+1 <= (dotsQuantity/2)){
                 if((i+1) % 2 == 0){ //FIRST QUARTER
-                    manaDots[0][i] =
-                            new Square((int)(randomPosX(columns/2,0)*squareSize),
-                            (int)(randomPosY(columns/2,1)*squareSize));
-                    manaDots[1][i] = new Square((int)(randomPosX(columns/2,0)*squareSize),
-                            (int)(randomPosY(columns-1,columns/2)*squareSize));
+                    manaDots[0][i] = new Square((int)(randomPosX(half1,0)*squareSize),
+                            (int)(randomPosY(half1,1)*squareSize));
+                    manaDots[1][i] = new Square((int)(randomPosX(half1,0)*squareSize),
+                            (int)(randomPosY(columns-2,half2)*squareSize));
                 }else{ //SECOND QUARTER
                     manaDots[0][i] =
-                            new Square((int)(randomPosX(columns-1,
-                                    columns/2)*squareSize),
-                            (int)(randomPosY(columns/2,1)*squareSize));
+                            new Square((int)(randomPosX(columns-1, half2)*squareSize),
+                            (int)(randomPosY(half1,1)*squareSize));
                     manaDots[1][i] =
-                            new Square((int)(randomPosX(columns-1,
-                                    columns/2)*squareSize),
-                            (int)(randomPosY(columns-1,columns/2)*squareSize));
+                            new Square((int)(randomPosX(columns-1, half2)*squareSize),
+                            (int)(randomPosY(columns-2,half2)*squareSize));
                 }
             }
             else{
                 if((i+1) % 2 == 0){ //THIRD QUARTER
-                    manaDots[0][i] =
-                            new Square((int)(randomPosX(columns/2,0)*squareSize),
-                            (int)(randomPosY(columns/2,1)*squareSize));
-                    manaDots[1][i] =
-                            new Square((int)(randomPosX(columns/2,0)*squareSize),
-                            (int)(randomPosY(columns-1,columns/2)*squareSize));
+                    manaDots[0][i] = new Square((int)(randomPosX(half1,0)*squareSize),
+                            (int)(randomPosY(half1,1)*squareSize));
+                    manaDots[1][i] = new Square((int)(randomPosX(half1,0)*squareSize),
+                            (int)(randomPosY(columns-2,half2)*squareSize));
                 }else{ //FOURTH QUARTER
-                    manaDots[0][i] =
-                            new Square((int)(randomPosX(columns-1,
-                                    columns/2)*squareSize),
-                            (int)(randomPosY(columns/2,1)*squareSize));
-                    manaDots[1][i] =
-                            new Square((int)(randomPosX(columns-1,
-                                    columns/2)*squareSize),
-                            (int)(randomPosY(columns-1,columns/2)*squareSize));
+                    manaDots[0][i] = new Square((int)(randomPosX(columns-1, half2)*squareSize),
+                            (int)(randomPosY(half1,1)*squareSize));
+                    manaDots[1][i] = new Square((int)(randomPosX(columns-1, half2)*squareSize),
+                            (int)(randomPosY(columns-2,half2)*squareSize));
                 }
             }
         }
