@@ -10,6 +10,7 @@ import ac.ucr.b66958.proyecto.utility.Utility;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.*;
@@ -41,13 +42,11 @@ public class InitWindow extends Pane {
     private Button begin, quit, restart, save, load;
     private Button move, pass, attack;
     private Button lifeMana, strengthMana, hitMana, stepMana;
-
-    private Label size, player1, player2;
     private TextField sizeText, player1Name, player2Name;
 
     private HBox menu, menuMana;
 
-    private Label showTurn, showMessage, dotsLost, manaInfo;
+    private Label size, showTurn, showMessage, dotsLost, manaInfo;
 
     private ObservableList<Dot> dotsView;
     private ListView<Dot> dotsListView;
@@ -74,8 +73,8 @@ public class InitWindow extends Pane {
         initAttributes();
 
         this.getChildren().addAll(this.canvas, this.logo, this.size, this.sizeText, this.begin,
-                this.player1, this.player2, this.player1Name, this.player2Name, this.showTurn,
-                this.defaultDimensions, this.menu, this.menuMana, this.dotsListView, this.dotsLost);
+                this.player1Name, this.player2Name, this.showTurn, this.defaultDimensions,
+                this.menu, this.menuMana, this.dotsListView, this.dotsLost);
 
         this.menu.getChildren().addAll(this.quit, this.save, this.load, this.restart, this.move, this.pass,
                 this.attack, this.showMessage);
@@ -93,14 +92,13 @@ public class InitWindow extends Pane {
         this.logo = Utility.dotWarsLogo();
 
         this.begin = new Button("Begin new game");
-        this.size = new Label("Board size:");
+        this.size = new Label("Your board size:");
         this.sizeText = new TextField();
 
         this.showTurn = new Label("Player's turn: ");
         this.showTurn.setVisible(false);
 
         this.dotsLost = new Label("");
-        this.dotsLost.setVisible(false);
 
         this.lifeMana = new Button("+ Life");
         this.strengthMana = new Button("+ Strength");
@@ -110,14 +108,8 @@ public class InitWindow extends Pane {
         this.manaInfo = new Label("");
         this.manaInfo.setStyle("-fx-text-fill: #ffffff");
 
-        this.player1 = new Label("Player 1:");
         this.player1Name = new TextField();
-
-        this.player2 = new Label("Player 2:");
         this.player2Name = new TextField();
-
-        this.size = new Label("Board size:");
-        this.sizeText = new TextField();
 
         this.menu = new HBox();
         this.menu.setPrefHeight(50);
@@ -162,50 +154,49 @@ public class InitWindow extends Pane {
 
     private void setCoordinates() {
 
-        this.size.setLayoutX(720);
-        this.size.setLayoutY(50);
+        this.size.setLayoutX(830);
+        this.size.setLayoutY(60);
 
-        this.defaultDimensions.setLayoutX(790);
-        this.defaultDimensions.setLayoutY(50);
+        this.defaultDimensions.setLayoutX(1070);
+        this.defaultDimensions.setLayoutY(60);
 
-        this.sizeText.setLayoutX(920);
-        this.sizeText.setLayoutY(50);
-        this.sizeText.setPrefWidth(100);
+        this.sizeText.setLayoutX(940);
+        this.sizeText.setLayoutY(60);
+        this.sizeText.setAlignment(Pos.CENTER);
+        this.sizeText.setPrefWidth(105);
 
-        this.begin.setLayoutX(1040);
-        this.begin.setLayoutY(50);
+        this.begin.setLayoutX(940);
+        this.begin.setLayoutY(95);
 
-        this.player1.setLayoutX(720);
-        this.player1.setLayoutY(10);
-
-        this.player1Name.setLayoutX(790);
+        this.player1Name.setLayoutX(820);
         this.player1Name.setLayoutY(10);
+        this.player1Name.setAlignment(Pos.CENTER);
+        this.player1Name.setPromptText("Player 1");
 
-        this.player2.setLayoutX(950);
-        this.player2.setLayoutY(10);
-
-        this.player2Name.setLayoutX(1020);
+        this.player2Name.setLayoutX(1010);
         this.player2Name.setLayoutY(10);
+        this.player2Name.setAlignment(Pos.CENTER);
+        this.player2Name.setPromptText("Player 2");
 
-        this.logo.setLayoutX(1170);
-        this.logo.setLayoutY(8);
-        this.logo.setFitWidth(120);
+        this.logo.setLayoutX(850);
+        this.logo.setLayoutY(120);
+        this.logo.setFitWidth(300);
         this.logo.setPreserveRatio(true);
 
         this.showTurn.setLayoutX(720);
-        this.showTurn.setLayoutY(90);
+        this.showTurn.setLayoutY(370);
 
-        this.dotsLost.setLayoutX(950);
-        this.dotsLost.setLayoutY(90);
+        this.dotsLost.setLayoutX(1200);
+        this.dotsLost.setLayoutY(370);
 
-        this.menu.setLayoutX(720);
-        this.menu.setLayoutY(120);
+        this.menu.setLayoutX(700);
+        this.menu.setLayoutY(400);
 
-        this.dotsListView.setLayoutX(720);
-        this.dotsListView.setLayoutY(170);
+        this.dotsListView.setLayoutX(700);
+        this.dotsListView.setLayoutY(450);
 
-        this.menuMana.setLayoutX(720);
-        this.menuMana.setLayoutY(370);
+        this.menuMana.setLayoutX(700);
+        this.menuMana.setLayoutY(650);
     }
 
     private void initAttributes() {
@@ -814,6 +805,7 @@ public class InitWindow extends Pane {
 
     private void quitGame() {
         clearGame();
+        disablePlayButtons();
         GameMediaPlayer.playEndGame();
         if (turn.getName().equals(p1.getName())) {
             Utility.showMessage(p2.getName() + " has won the game!", 2);
