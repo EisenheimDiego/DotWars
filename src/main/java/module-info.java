@@ -1,6 +1,7 @@
 module ac.ucr.b66958.proyecto {
     requires javafx.controls;
     requires javafx.fxml;
+    requires javafx.media;
 
     requires org.controlsfx.controls;
     requires com.fasterxml.jackson.databind;

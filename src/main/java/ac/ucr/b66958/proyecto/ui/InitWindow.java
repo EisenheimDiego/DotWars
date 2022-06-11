@@ -4,6 +4,7 @@ import ac.ucr.b66958.proyecto.domain.Dot;
 import ac.ucr.b66958.proyecto.domain.Memento;
 import ac.ucr.b66958.proyecto.domain.Player;
 import ac.ucr.b66958.proyecto.domain.Square;
+import ac.ucr.b66958.proyecto.media.GameMediaPlayer;
 import ac.ucr.b66958.proyecto.service.GameService;
 import ac.ucr.b66958.proyecto.utility.Utility;
 import javafx.collections.FXCollections;
@@ -452,12 +453,15 @@ public class InitWindow extends Pane {
                 message = "Value must be a multiple of 5. Min value: 5";
             } else {
                 if (player1Name.getText().isEmpty() || player1Name.getText().equals("")
-                        || player2Name.getText().isEmpty() || player2Name.getText().equals("")) {
-                    message = "You must type both of the players names";
+                        || player2Name.getText().isEmpty() || player2Name.getText().equals("")
+                        || player1Name.getText().equalsIgnoreCase(player2Name.getText())) {
+                    message = "You must type both of the players names \n Both names have to be different";
                 } else {
                     p1 = new Player(player1Name.getText());
                     p2 = new Player(player2Name.getText());
                     turn = p2;
+                    GameMediaPlayer.playStart();
+                    GameMediaPlayer.playAmbiance();
                     squares = Utility.initSquares(n);
                     drawBoard();
                     assignDots();
@@ -665,11 +669,13 @@ public class InitWindow extends Pane {
 
     private void infoAttack(boolean result) {
         if (result) {
+            GameMediaPlayer.playHit();
             Utility.showMessage("You've attacked", 2);
             attack();
             step++;
         } else {
             Utility.showMessage("You're enemy is too far", 1);
+            repaint();
             newAction();
         }
         enablePlayButtons();
@@ -707,6 +713,7 @@ public class InitWindow extends Pane {
         if (posDead > -1) {
             toCheck.getDots().remove(posDead);
             toCheck.newDotLost();
+            GameMediaPlayer.playDead();
             return true;
         }
         return false;
@@ -807,6 +814,7 @@ public class InitWindow extends Pane {
 
     private void quitGame() {
         clearGame();
+        GameMediaPlayer.playEndGame();
         if (turn.getName().equals(p1.getName())) {
             Utility.showMessage(p2.getName() + " has won the game!", 2);
         } else {
@@ -829,13 +837,7 @@ public class InitWindow extends Pane {
     }
 
     private void checkLoser() {
-        if (p1.getDots().size() == 0) {
-            turn = p2;
-            quitGame();
-        } else if (p2.getDots().size() == 0) {
-            turn = p1;
-            quitGame();
-        }
+        if (p1.getDots().size() == 0 || p2.getDots().size() == 0) quitGame();
     }
 
     private void checkManaPositions(Player p) {
