@@ -1,5 +1,7 @@
 # DotWars
 
+<p align="center"> <img src="./src/main/java/ac/ucr/b66958/proyecto/images/logo.png" width="300"> </p>
+
 ### Once the app is running:
 
 - Both players must type their names.
