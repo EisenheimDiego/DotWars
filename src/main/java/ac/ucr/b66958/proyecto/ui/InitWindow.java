@@ -582,6 +582,7 @@ public class InitWindow extends Pane {
                     Utility.showMessage("You've added 1 point to your dot step distance", 2);
                     break;
             }
+            turn.takeManaPoint();
             updateDotsList();
         } else {
             Utility.showMessage("You don't have enough mana points."

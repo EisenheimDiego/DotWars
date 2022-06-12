@@ -56,6 +56,10 @@ public class Player {
         this.manaPoints++;
     }
 
+    public void takeManaPoint(){
+        this.manaPoints--;
+    }
+
     public void setManaPoints(int manaPoints) {
         this.manaPoints = manaPoints;
     }
