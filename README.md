@@ -2,21 +2,26 @@
 
 <p align="center"> <img src="./src/main/java/ac/ucr/b66958/proyecto/images/logo.png" width="300"> </p>
 
+### Dot Wars is a game that can be played by two players. 
+### In the game, both players will fight to destroy every opponent's dot that can destroy their dots.
+### This will be accomplished by moving your dots strategically, in order for them to not be damaged, but for you to attack.
+
+## Inside the game
+
 ### Once the app is running:
 
 - Both players must type their names.
 - A board size must be selected from the default options, or typed in the personalized option.
 - Once all this data has been provided, you can go ahead and click the **Begin new game** button.
 - Example of data:
-
-![alt text](./src/main/java/ac/ucr/b66958/proyecto/images/data.png "FillingData")
+<p align="center"> <img src="./src/main/java/ac/ucr/b66958/proyecto/images/data.png" width="300"> </p>
 
 ### Once the game has begun:
 
 - The game will indicate which player's turn is up. ![alt text](./src/main/java/ac/ucr/b66958/proyecto/images/turn.png "ShowTurn")
 - It will also indicate the amount of dots that have been killed. ![alt text](./src/main/java/ac/ucr/b66958/proyecto/images/dotslost.png "dotsLost")
 - As well as its dots information. 
-- ![alt text](./src/main/java/ac/ucr/b66958/proyecto/images/dots.png "Dots")
+- <p align="center"> <img src="./src/main/java/ac/ucr/b66958/proyecto/images/dots.png"> </p>
 - The player whose turn is to play will have various options during it's turn, such like:
     - Quit the game ![alt text](./src/main/java/ac/ucr/b66958/proyecto/images/quit.png "Quit")
     - >The game will finish and the player who chose to quit the game, will lose.
@@ -34,14 +39,14 @@
 1. Play: you get to move a dot and attack an enemy dot.
    - ### Move
       - Click on the button:  ![alt text](./src/main/java/ac/ucr/b66958/proyecto/images/move.png "Move")
-      - Choose a dot to be moved: 
-      - ![alt text](./src/main/java/ac/ucr/b66958/proyecto/images/chosen.png "Dot")
+      - Choose a dot to be moved:
+     - <p align="center"> <img src="./src/main/java/ac/ucr/b66958/proyecto/images/chosen.png"> </p>
       - Using the arrow keys on your keyboard, move your dot to the desired position.
    - ### Attack
       - Click on the button: ![alt text](./src/main/java/ac/ucr/b66958/proyecto/images/attack.png "Attack")
       - Choose a dot, the same way you chose when moving.
       - And then choose the enemy dot you want to attack:
-      - ![alt text](./src/main/java/ac/ucr/b66958/proyecto/images/attacked.png "Attacked")
+     - <p align="center"> <img src="./src/main/java/ac/ucr/b66958/proyecto/images/attacked.png"> </p>
       - If your enemy is within a ratio of your hit distance, you will attack it, otherwise the attack will be wasted.
 2. Pass: you pass your turn to the opposite player. ![alt text](./src/main/java/ac/ucr/b66958/proyecto/images/pass.png "Pass")
 
