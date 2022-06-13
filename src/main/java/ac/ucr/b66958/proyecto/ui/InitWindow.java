@@ -93,7 +93,7 @@ public class InitWindow extends Pane {
 
         this.logo = Utility.dotWarsLogo();
 
-        this.begin = new Button("Begin new game");
+        this.begin = new Button("Start new game");
         this.size = new Label("Your board size:");
         this.sizeText = new TextField();
 
@@ -138,6 +138,7 @@ public class InitWindow extends Pane {
 
         this.move = new Button("Move");
         this.pass = new Button("Pass");
+        this.pass.setDisable(true);
         this.attack = new Button("Attack!");
 
         this.showMessage = new Label("");
@@ -152,6 +153,7 @@ public class InitWindow extends Pane {
         this.dotsListView.setPrefSize(600, 200);
 
         disablePlayButtons();
+        this.pass.setDisable(true);
     }
 
     private void setCoordinates() {
@@ -237,6 +239,7 @@ public class InitWindow extends Pane {
             movements = 0;
             assignTurn();
         }
+        enablePlayButtons();
     }
 
     private void assignTurn() {
@@ -318,6 +321,7 @@ public class InitWindow extends Pane {
             action(1);
         }
         if (info == 2) {
+            this.pass.setDisable(true);
             messageInfo("Choose your attacker");
             action(2);
         }
@@ -414,6 +418,8 @@ public class InitWindow extends Pane {
     }
 
     private void restartGame(Memento memento, boolean flag) {
+        p1 = null;
+        p2 = null;
         obtainMementoData(memento);
         clearBoard();
         drawBoard();
@@ -423,6 +429,7 @@ public class InitWindow extends Pane {
         assignTurn();
         disableInitButtons();
         enablePlayButtons();
+        this.pass.setDisable(false);
         playBeginning();
         if (flag) Utility.showMessage("Game restarted", 2);
         else Utility.showMessage("Game loaded", 2);
@@ -471,6 +478,7 @@ public class InitWindow extends Pane {
                     assignTurn();
                     disableInitButtons();
                     enablePlayButtons();
+                    this.pass.setDisable(false);
                 }
             }
         } catch (NumberFormatException nfe) {
@@ -678,6 +686,7 @@ public class InitWindow extends Pane {
             newAction();
             enablePlayButtons();
         }
+        this.pass.setDisable(false);
         this.chosen = null;
         this.enemy = null;
         attMov = 0;
@@ -803,8 +812,8 @@ public class InitWindow extends Pane {
     }
 
     private void loadGame() {
-        Memento loaded = this.gameService.loadGame();
-        restartGame(loaded, false);
+        this.memento = this.gameService.loadGame();
+        restartGame(memento, false);
     }
 
     private void saveGame() {
@@ -825,6 +834,7 @@ public class InitWindow extends Pane {
         initAttributes();
         enableInitButtons();
         disablePlayButtons();
+        this.pass.setDisable(true);
         showTurn.setText("");
         dotsLost.setText("");
         player1Name.clear();
@@ -885,7 +895,6 @@ public class InitWindow extends Pane {
         this.restart.setDisable(true);
         this.save.setDisable(true);
         this.move.setDisable(true);
-        this.pass.setDisable(true);
         this.attack.setDisable(true);
         this.lifeMana.setDisable(true);
         this.hitMana.setDisable(true);
@@ -898,7 +907,6 @@ public class InitWindow extends Pane {
         this.restart.setDisable(false);
         this.save.setDisable(false);
         this.move.setDisable(false);
-        this.pass.setDisable(false);
         this.attack.setDisable(false);
         this.lifeMana.setDisable(false);
         this.hitMana.setDisable(false);

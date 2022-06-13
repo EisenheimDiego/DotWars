@@ -12,7 +12,7 @@
 
 - Both players must type their names.
 - A board size must be selected from the default options, or typed in the personalized option.
-- Once all this data has been provided, you can go ahead and click the **Begin new game** button.
+- Once all this data has been provided, you can go ahead and click the **Start new game** button.
 - Example of data:
 <p align="center"> <img src="./src/main/java/ac/ucr/b66958/proyecto/images/data.png" width="300"> </p>
 
