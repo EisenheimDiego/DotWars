@@ -262,7 +262,7 @@ public class InitWindow extends Pane {
         if (attMov == 0 || attMov == 2) {
             return;
         }
-        if (dotPosition == -1) {
+        if (dotPosition == -1 || chosen == null) {
             return;
         }
         switch (event.getCode()) {
@@ -606,7 +606,6 @@ public class InitWindow extends Pane {
 
     private boolean checkManaPoints(int action) {
         if (chosen.getManaPoints() < 1){
-            System.out.println("No tiene puntos");
             return false;
         }
         switch (action) {
@@ -670,14 +669,15 @@ public class InitWindow extends Pane {
         if (result) {
             GameMediaPlayer.playHit();
             Utility.showMessage("You've attacked", 2);
+            enablePlayButtons();
             attack();
             step++;
         } else {
             Utility.showMessage("You're enemy is too far", 1);
             repaint();
             newAction();
+            enablePlayButtons();
         }
-        enablePlayButtons();
         this.chosen = null;
         this.enemy = null;
         attMov = 0;
@@ -813,7 +813,6 @@ public class InitWindow extends Pane {
 
     private void quitGame() {
         clearGame();
-        disablePlayButtons();
         GameMediaPlayer.playEndGame(mediaPlayer);
         if (turn.getName().equals(p1.getName())) {
             Utility.showMessage(p2.getName() + " has won the game!", 2);
