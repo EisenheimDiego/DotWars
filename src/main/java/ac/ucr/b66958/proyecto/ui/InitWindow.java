@@ -551,6 +551,7 @@ public class InitWindow extends Pane {
                 if (dotAtMana(chosen)) {
                     Utility.showMessage("Can't attack. Move your dot!", 1);
                     enablePlayButtons();
+                    this.pass.setDisable(false);
                     if (movements == 0) {
                         messageInfo("Choose your action: 1/2");
                     } else if (movements == 1) {
